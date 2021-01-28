@@ -1,6 +1,51 @@
 # adstr
 
 ## Project setup
+
+### Prerequisites
+```
+npm install -g @vue/cli
+npm install -g @aws-amplify/cli
+``` 
+
+### Vue project creation
+```
+vue create adstr
+```
+
+Use babel, eslint, router, vuex
+
+### Install dependencies
+```
+
+vue add tailwind
+```
+
+Add this to main.js
+```
+import './assets/tailwind.css'
+```
+
+### Setup AWS Amplify
+```
+amplify init
+amplify add auth
+amplify push
+npm install aws-amplify
+```
+
+Using Admin UI setup API and run
+```
+amplify pull
+```
+
+Add this to main.js
+```
+import Amplify from 'aws-amplify'
+import aws_exports from './aws-exports'
+```
+
+## Project install
 ```
 npm install
 ```
@@ -19,6 +64,3 @@ npm run build
 ```
 npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
