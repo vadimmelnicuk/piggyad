@@ -1,8 +1,7 @@
 <template>
-  <div class="home">
-    Home
+  <div class="mb-2 text-xl font-semibold">
+    Authors
   </div>
-  Authors
   <div v-for="author in authors" :key="author.id">
     {{author.firstName}} {{author.lastName}}
   </div>
@@ -29,7 +28,6 @@ export default {
   unmounted() {
     if(this.authorsSubscription) {
       this.authorsSubscription.unsubscribe()
-      console.log('unsubscribed')
     }
   },
   methods: {
