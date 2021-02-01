@@ -1,38 +1,64 @@
 <template>
-  <div class="mb-2 text-xl font-semibold">
-    Authors
+  <div class="title">
+    Add new note
   </div>
-  <div v-for="author in authors" :key="author.id">
-    {{author.firstName}} {{author.lastName}}
+  <form v-on:submit.prevent="createNote" class="w-full flex">
+    <input type="text" placeholder="Body" v-model="note.body">
+    <input type="submit" value="Create" class="ml-2 w-32">
+  </form>
+  <div class="title">
+    Notes
+  </div>
+  <div v-for="note in notes" v-bind:key="note.id">
+    {{note.body}} - 
+    <a v-on:click="$router.push('/profile/'+note.owner)" class="cursor-pointer">{{note.owner}}</a>
+    <a v-on:click="deleteNote(note.id)" class="ml-2 px-2 bg-gray-100 border cursor-pointer">x</a>
   </div>
 </template>
 
 <script>
 import { DataStore } from '@aws-amplify/datastore'
-import { Authors } from '@/models'
+import { Notes } from '@/models'
 
 export default {
   name: 'Home',
   data() {
     return {
-      authorsSubscription: null,
-      authors: []
+      subscriptions: [],
+      notes: [],
+      note: {
+        body: ""
+      }
     }
   },
-  mounted() {
-    this.getAuthors()
-    this.authorsSubscription = DataStore.observe(Authors).subscribe(() => {
-      this.getAuthors()
+  mounted() { 
+    this.getNotes()
+    const subscription = DataStore.observe(Notes).subscribe(() => {
+      this.getNotes()
     })
+    this.subscriptions.push(subscription)
   },
   unmounted() {
-    if(this.authorsSubscription) {
-      this.authorsSubscription.unsubscribe()
+    if(this.subscriptions.length > 0) {
+      this.subscriptions.forEach((subscription) => {
+        subscription.unsubscribe()
+      })
     }
   },
   methods: {
-    async getAuthors() {
-      this.authors = await DataStore.query(Authors);
+    async getNotes() {
+        this.notes = await DataStore.query(Notes)
+    },
+    async createNote() {
+      await DataStore.save(
+        new Notes({
+          body: this.note.body
+        })
+      )
+    },
+    async deleteNote(id) {
+      const note = await DataStore.query(Notes, id)
+      DataStore.delete(note)
     }
   }
 }

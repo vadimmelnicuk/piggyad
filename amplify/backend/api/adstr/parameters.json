@@ -1,5 +1,11 @@
 {
   "AppSyncApiName": "adstr",
   "DynamoDBBillingMode": "PAY_PER_REQUEST",
-  "DynamoDBEnableServerSideEncryption": false
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authadstr411ace4f",
+      "Outputs.UserPoolId"
+    ]
+  }
 }

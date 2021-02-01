@@ -1,5 +1,8 @@
 <template>
-  <div class="font-semibold text-xl">
+  <div class="title">
     About
+  </div>
+  <div>
+    Streaming advertising platform
   </div>
 </template>

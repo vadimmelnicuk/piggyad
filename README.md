@@ -45,6 +45,12 @@ import Amplify from 'aws-amplify'
 import aws_exports from './aws-exports'
 ```
 
+Add storage
+```
+amplify add storage
+amplify push
+```
+
 ## Project install
 ```
 npm install

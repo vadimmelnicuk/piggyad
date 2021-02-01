@@ -1,3 +1,4 @@
+import { Auth } from 'aws-amplify'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
@@ -9,7 +10,14 @@ const routes = [
   {
     path: '/about',
     name: 'About',
-    component: () => import('@/views/About.vue')
+    component: () => import('@/views/About.vue'),
+    meta: {requiresAuth: true}
+  },
+  {
+    path: '/profile/:id',
+    name: 'Profile',
+    component: () => import('@/views/Profile.vue'),
+    meta: {requiresAuth: true}
   },
   {
     path: '/login',
@@ -20,12 +28,35 @@ const routes = [
     path: '/signup',
     name: 'Signup',
     component: () => import('@/views/Signup.vue')
+  },
+  {
+    path: '/stream',
+    name: 'Stream',
+    component: () => import('@/views/Stream.vue'),
+    meta: {requiresAuth: true}
+  },
+  {
+    path: '/advertise',
+    name: 'Advertise',
+    component: () => import('@/views/Advertise.vue'),
+    meta: {requiresAuth: true}
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+router.beforeEach(async (to, from, next) => {
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const isAuthenticated = await Auth.currentUserInfo()
+
+  if (requiresAuth && !isAuthenticated) {
+    next("/login")
+  } else {
+    next()
+  }
 })
 
 export default router

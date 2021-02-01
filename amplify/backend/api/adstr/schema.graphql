@@ -1,6 +1,6 @@
-type Authors @model @auth(rules: [{allow: public}]) {
+type Notes @model @auth(rules: [{allow: owner, operations: [read, create, update, delete]}]) {
   id: ID!
-  firstName: String
-  lastName: String
+  body: String!
+  owner: String
 }
  
