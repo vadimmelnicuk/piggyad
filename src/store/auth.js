@@ -1,5 +1,4 @@
 import { Auth } from 'aws-amplify'
-import { DataStore } from '@aws-amplify/datastore'
 
 export const auth = {
   namespaced: true,
@@ -34,7 +33,6 @@ export const auth = {
       commit("setUser", null)
       try {
         await Auth.signOut()
-        await DataStore.clear()
         return Promise.resolve()
       } catch (error) {
         return Promise.reject(error)
@@ -58,14 +56,6 @@ export const auth = {
       try {
         await Auth.confirmSignUp(username, code)
         return Promise.resolve()
-      } catch (error) {
-        return Promise.reject(error)
-      }
-    },
-    async getProfile(_, {user}) {
-      try {
-        const profile = await Auth.userAttributes(user)
-        return Promise.resolve(profile)
       } catch (error) {
         return Promise.reject(error)
       }

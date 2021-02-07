@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "storage": {
+      "Stream:@model(appsync)": [
+        "read",
+        "update"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

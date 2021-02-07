@@ -1,11 +1,13 @@
 <template>
-  <div class="title">
-    Add new note
+  <div v-if="user">
+    <div class="title">
+      Add new note
+    </div>
+    <form v-on:submit.prevent="createNote" class="w-full flex">
+      <input type="text" placeholder="Body" v-model="note.body">
+      <input type="submit" value="Create" class="ml-2 w-32">
+    </form>
   </div>
-  <form v-on:submit.prevent="createNote" class="w-full flex">
-    <input type="text" placeholder="Body" v-model="note.body">
-    <input type="submit" value="Create" class="ml-2 w-32">
-  </form>
   <div class="title">
     Notes
   </div>
@@ -17,8 +19,10 @@
 </template>
 
 <script>
-import { DataStore } from '@aws-amplify/datastore'
-import { Notes } from '@/models'
+import { API } from 'aws-amplify'
+import { listNotes } from '@/graphql/queries'
+import { createNote, deleteNote } from '@/graphql/mutations'
+import { onCreateNote, onDeleteNote } from '@/graphql/subscriptions'
 
 export default {
   name: 'Home',
@@ -33,32 +37,38 @@ export default {
   },
   mounted() { 
     this.getNotes()
-    const subscription = DataStore.observe(Notes).subscribe(() => {
-      this.getNotes()
+    const createNoteSub = API.graphql({ query: onCreateNote, authMode: 'AWS_IAM' }).subscribe({
+      next: () => this.getNotes()
     })
-    this.subscriptions.push(subscription)
+    this.subscriptions.push(createNoteSub)
+
+    const deleteNoteSub = API.graphql({ query: onDeleteNote, authMode: 'AWS_IAM' }).subscribe({
+      next: () => this.getNotes()
+    })
+    this.subscriptions.push(deleteNoteSub)
   },
   unmounted() {
-    if(this.subscriptions.length > 0) {
+    if(this.subscriptions.length) {
       this.subscriptions.forEach((subscription) => {
         subscription.unsubscribe()
       })
     }
   },
+  computed: {
+    user() {
+      return this.$store.getters["auth/user"]
+    }
+  },
   methods: {
     async getNotes() {
-        this.notes = await DataStore.query(Notes)
+      const notes = await API.graphql({ query: listNotes, authMode: 'AWS_IAM' })
+      this.notes = notes.data.listNotes.items
     },
     async createNote() {
-      await DataStore.save(
-        new Notes({
-          body: this.note.body
-        })
-      )
+      await API.graphql({ query: createNote, variables: {input: this.note}})
     },
     async deleteNote(id) {
-      const note = await DataStore.query(Notes, id)
-      DataStore.delete(note)
+      await API.graphql({ query: deleteNote, variables: { input: { id: id }}})
     }
   }
 }

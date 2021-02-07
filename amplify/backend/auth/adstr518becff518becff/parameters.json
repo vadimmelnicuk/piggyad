@@ -1,8 +1,8 @@
 {
-    "identityPoolName": "adstr411ace4f_identitypool_411ace4f",
-    "allowUnauthenticatedIdentities": false,
-    "resourceNameTruncated": "adstr411ace4f",
-    "userPoolName": "adstr411ace4f_userpool_411ace4f",
+    "identityPoolName": "adstr518becff_identitypool_518becff",
+    "allowUnauthenticatedIdentities": true,
+    "resourceNameTruncated": "adstr518becff",
+    "userPoolName": "adstr518becff_userpool_518becff",
     "autoVerifiedAttributes": [
         "email"
     ],
@@ -28,10 +28,10 @@
     "userpoolClientReadAttributes": [
         "email"
     ],
-    "userpoolClientLambdaRole": "adstr4411ace4f_userpoolclient_lambda_role",
+    "userpoolClientLambdaRole": "adstr5518becff_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
-    "sharedId": "411ace4f",
-    "resourceName": "adstr411ace4f",
+    "sharedId": "518becff",
+    "resourceName": "adstr518becff518becff",
     "authSelections": "identityPoolAndUserPool",
     "authRoleArn": {
         "Fn::GetAtt": [
@@ -45,9 +45,18 @@
             "Arn"
         ]
     },
-    "useDefault": "default",
+    "useDefault": "manual",
+    "thirdPartyAuth": false,
+    "userPoolGroups": false,
+    "adminQueries": false,
+    "triggers": "{}",
+    "hostedUI": false,
     "userPoolGroupList": [],
     "serviceName": "Cognito",
     "usernameCaseSensitive": false,
+    "parentStack": {
+        "Ref": "AWS::StackId"
+    },
+    "permissions": [],
     "dependsOn": []
 }

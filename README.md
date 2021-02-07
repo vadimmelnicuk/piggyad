@@ -28,15 +28,17 @@ import './assets/tailwind.css'
 
 ### Setup AWS Amplify
 ```
+amplify configure
 amplify init
 amplify add auth
 amplify push
 npm install aws-amplify
 ```
 
-Using Admin UI setup API and run
+Add GraphQL API
 ```
-amplify pull
+amplify add api
+amplify push
 ```
 
 Add this to main.js

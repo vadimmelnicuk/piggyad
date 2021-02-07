@@ -1,4 +1,12 @@
 {
+  "auth": {
+    "adstr518becff518becff": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
+    }
+  },
   "api": {
     "adstr": {
       "service": "AppSync",
@@ -8,7 +16,7 @@
           "defaultAuthentication": {
             "authenticationType": "AMAZON_COGNITO_USER_POOLS",
             "userPoolConfig": {
-              "userPoolId": "authadstr411ace4f_userpool_411ace4f"
+              "userPoolId": "authadstr518becff518becff"
             }
           },
           "additionalAuthenticationProviders": [
@@ -20,18 +28,34 @@
       }
     }
   },
-  "auth": {
-    "adstr411ace4f": {
-      "service": "Cognito",
+  "function": {
+    "streamStatus": {
+      "build": true,
       "providerPlugin": "awscloudformation",
-      "dependsOn": [],
-      "customAuth": false
-    }
-  },
-  "storage": {
-    "Adverts": {
-      "service": "S3",
-      "providerPlugin": "awscloudformation"
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "api",
+          "resourceName": "adstr",
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ]
+        }
+      ]
+    },
+    "createProfile": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "api",
+          "resourceName": "adstr",
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ]
+        }
+      ]
     }
   }
 }
