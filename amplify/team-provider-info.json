@@ -14,6 +14,20 @@
     "categories": {
       "auth": {
         "adstr518becff518becff": {}
+      },
+      "function": {
+        "createProfile": {
+          "deploymentBucketName": "amplify-adstr-dev-232211-deployment",
+          "s3Key": "amplify-builds/createProfile-56355a4176374f344c2b-build.zip"
+        },
+        "streamFunctions": {
+          "deploymentBucketName": "amplify-adstr-dev-232211-deployment",
+          "s3Key": "amplify-builds/streamFunctions-4a6d483241722b4f5446-build.zip"
+        },
+        "streamStatus": {
+          "deploymentBucketName": "amplify-adstr-dev-232211-deployment",
+          "s3Key": "amplify-builds/streamStatus-67725851375251524455-build.zip"
+        }
       }
     }
   }

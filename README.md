@@ -17,7 +17,8 @@ Use babel, eslint, router, vuex
 
 ### Install dependencies
 ```
-
+npm install uuid
+npm install moment
 vue add tailwind
 ```
 

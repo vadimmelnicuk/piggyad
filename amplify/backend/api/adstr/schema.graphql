@@ -1,4 +1,5 @@
-type Note @model
+type Note
+@model
 @auth (rules: [
   { allow: owner, operations: [create, update, delete] },
   { allow: private, operations: [read] },
@@ -6,11 +7,12 @@ type Note @model
 ])
 {
   id: ID!
-  body: String!
   owner: String
+  body: String!
 }
 
-type Profile @model
+type Profile
+@model (queries: null)
 @auth (rules: [
   { allow: owner, operations: [update] },
   { allow: private, operations: [read] }
@@ -18,20 +20,57 @@ type Profile @model
 @key (name: "getProfileByOwner", fields: ["owner"], queryField: "getProfileByOwner")
 {
   id: ID!
-  owner: String!
-  stream: Stream @connection
+  owner: String
+  stream: Stream @connection @auth (rules: [{ allow: owner, operations: [create, read, update, delete] }])
 }
 
-type Stream @model
+type Stream
+@model
 @auth (rules: [
   { allow: owner, operations: [create, update, delete] },
-  { allow: private, operations: [read] }
+  { allow: private, operations: [read] },
+  { allow: public, operations: [read], provider: iam }
+])
+@key (name: "getStreamByToken", fields: ["urlToken"], queryField: "getStreamByToken")
+{
+  id: ID!
+  owner: String 
+  username: String
+  platform: String
+  verified: Boolean
+  online: Boolean 
+  urlToken: String
+  verificationToken: String
+}
+
+type Advert
+@model
+@auth (rules: [
+  { allow: owner, operations: [create, update, delete] },
+  { allow: private, operations: [read] },
+  { allow: public, operations: [read], provider: iam }
 ])
 {
   id: ID!
   owner: String
-  username: String
-  platform: String
-  varified: Boolean
-  online: Boolean
+  title: String!
+  type: String
+  asset: S3Object
+}
+
+type Secret
+@model
+@auth (rules: [
+  { allow: groups, groups: ["Admin"] }
+])
+@key (name: "getSecretByName", fields: ["name"], queryField: "getSecretByName")
+{
+  id: ID!
+  name: String!
+  key: String
+}
+
+type S3Object @aws_iam @aws_cognito_user_pools
+{
+  key: String!
 }

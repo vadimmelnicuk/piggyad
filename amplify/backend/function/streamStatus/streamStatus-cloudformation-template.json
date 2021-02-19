@@ -7,16 +7,18 @@
       "Default": "NONE",
       "Description": " Schedule Expression"
     },
+    "deploymentBucketName": {
+      "Type": "String"
+    },
     "env": {
+      "Type": "String"
+    },
+    "s3Key": {
       "Type": "String"
     },
     "apiadstrGraphQLAPIIdOutput": {
       "Type": "String",
       "Default": "apiadstrGraphQLAPIIdOutput"
-    },
-    "functiontwitchAccessTokenArn": {
-      "Type": "String",
-      "Default": "functiontwitchAccessTokenArn"
     }
   },
   "Conditions": {
@@ -37,6 +39,14 @@
         "aws:asset:property": "Code"
       },
       "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "deploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "s3Key"
+          }
+        },
         "Handler": "index.handler",
         "FunctionName": {
           "Fn::If": [
@@ -64,9 +74,6 @@
             "REGION": {
               "Ref": "AWS::Region"
             },
-            "API_ADSTR_GRAPHQLAPIIDOUTPUT": {
-              "Ref": "apiadstrGraphQLAPIIdOutput"
-            },
             "API_ADSTR_STREAMTABLE_NAME": {
               "Fn::ImportValue": {
                 "Fn::Sub": "${apiadstrGraphQLAPIIdOutput}:GetAtt:StreamTable:Name"
@@ -92,6 +99,35 @@
                   }
                 ]
               ]
+            },
+            "API_ADSTR_GRAPHQLAPIIDOUTPUT": {
+              "Ref": "apiadstrGraphQLAPIIdOutput"
+            },
+            "API_ADSTR_SECRETTABLE_NAME": {
+              "Fn::ImportValue": {
+                "Fn::Sub": "${apiadstrGraphQLAPIIdOutput}:GetAtt:SecretTable:Name"
+              }
+            },
+            "API_ADSTR_SECRETTABLE_ARN": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:aws:dynamodb:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":table/",
+                  {
+                    "Fn::ImportValue": {
+                      "Fn::Sub": "${apiadstrGraphQLAPIIdOutput}:GetAtt:SecretTable:Name"
+                    }
+                  }
+                ]
+              ]
             }
           }
         },
@@ -103,11 +139,7 @@
         },
         "Runtime": "nodejs12.x",
         "Layers": [],
-        "Timeout": "25",
-        "Code": {
-          "S3Bucket": "amplify-adstr-dev-232211-deployment",
-          "S3Key": "amplify-builds/streamStatus-7848724d34714c755472-build.zip"
-        }
+        "Timeout": "25"
       }
     },
     "LambdaExecutionRole": {
@@ -116,12 +148,12 @@
         "RoleName": {
           "Fn::If": [
             "ShouldNotCreateEnvResources",
-            "adstrLambdaRole73bf7eed",
+            "adstrLambdaRole66789b74",
             {
               "Fn::Join": [
                 "",
                 [
-                  "adstrLambdaRole73bf7eed",
+                  "adstrLambdaRole66789b74",
                   "-",
                   {
                     "Ref": "env"
@@ -257,6 +289,64 @@
                       {
                         "Fn::ImportValue": {
                           "Fn::Sub": "${apiadstrGraphQLAPIIdOutput}:GetAtt:StreamTable:Name"
+                        }
+                      },
+                      "/index/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:Get*",
+                "dynamodb:BatchGetItem",
+                "dynamodb:List*",
+                "dynamodb:Describe*",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:Update*",
+                "dynamodb:RestoreTable*"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:dynamodb:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":table/",
+                      {
+                        "Fn::ImportValue": {
+                          "Fn::Sub": "${apiadstrGraphQLAPIIdOutput}:GetAtt:SecretTable:Name"
+                        }
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:dynamodb:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":table/",
+                      {
+                        "Fn::ImportValue": {
+                          "Fn::Sub": "${apiadstrGraphQLAPIIdOutput}:GetAtt:SecretTable:Name"
                         }
                       },
                       "/index/*"

@@ -3,13 +3,24 @@
     Stream
   </div>
   <div v-if="profile && profile.stream">
-    <div class="title">Your Twitch</div>
-    <b>Your stream:</b>
+    <b>Your stream: </b>
     {{profile.stream.platform}} -
     {{profile.stream.username}} -
     <span v-if="profile.stream.online" class="text-green-600">online</span>
     <span v-else class="text-red-600">offline</span>
     <a v-on:click="deleteStream(profile.stream.id)" class="ml-2 px-2 bg-gray-100 border cursor-pointer">x</a>
+    <div>
+      <b>Integration url: </b>
+      <a v-bind:href="domain + '/' + profile.stream.urlToken" target="_blank">
+        {{domain}}/{{profile.stream.urlToken}}
+      </a>
+    </div>
+    <div v-if="profile.stream.verified">
+      Verified
+    </div>
+    <div v-else>
+      <button v-on:click="verifyStream" class="btn mt-4 bg-gray-300">Verify</button>
+    </div>
   </div>
   <div v-else>
     <div class="title">Link your Twitch account</div>
@@ -18,36 +29,30 @@
       <input type="submit" value="Link" class="ml-2 w-32">
     </form>
   </div>
-
-  <div class="mt-8">
-    Varify account ownership & Integrate adverts
-  </div>
-  <div>
-    Settings
-  </div>
 </template>
 
 <script>
 import { API } from 'aws-amplify'
 import { getProfileByOwner } from '@/graphql/queries'
-import { onUpdateProfile, onDeleteStream } from '@/graphql/subscriptions'
-import { createStream, deleteStream, updateProfile } from '@/graphql/mutations'
+import { deleteStream } from '@/graphql/mutations'
+import { onUpdateProfile, onUpdateStream, onDeleteStream } from '@/graphql/subscriptions'
 
 export default {
-  name: "Stream",
+  name: 'Stream',
   data() {
     return {
       subscriptions: [],
       profile: null,
       stream: {
-        username: "",
-        platform: "twitch"
-      }
+        username: '',
+        platform: 'twitch'
+      },
+      domain: window.location.href
     }
   },
   computed: {
     user() {
-      return this.$store.getters["auth/user"]
+      return this.$store.getters['auth/user']
     }
   },
   mounted() {
@@ -57,6 +62,11 @@ export default {
       next: () => this.getProfile()
     })
     this.subscriptions.push(onUpdateProfileSub)
+
+    const onUpdateStreamSub = API.graphql({ query: onUpdateStream }).subscribe({
+      next: () => this.getProfile()
+    })
+    this.subscriptions.push(onUpdateStreamSub)
 
     const onDeleteStreamSub = API.graphql({ query: onDeleteStream }).subscribe({
       next: () => this.getProfile()
@@ -78,21 +88,26 @@ export default {
         this.profile = profile.data.getProfileByOwner.items[0]
       }
     },
+    async getStream() {
+      
+    },
     async createStream() {
-      const stream = await API.graphql({ query: createStream, variables: { input: {
-        username: this.stream.username,
-        platform: this.stream.platform,
-        varified: false,
-        online: false
-      }}})
-
-      await API.graphql({ query: updateProfile, variables: { input: {
-        id: this.profile.id,
-        profileStreamId: stream.data.createStream.id
-      }}})
+      this.$store.dispatch('stream/createStream', this.stream)
     },
     async deleteStream(id) {
       await API.graphql({ query: deleteStream, variables: { input: { id: id }}})
+    },
+    async verifyStream() {
+      console.log('Verify stream')
+
+      try {
+        const response = await API.post('streamApi', '/stream/verify', { body: {
+          id: this.profile.stream.id
+        }})
+        console.log(response)
+      } catch (error) {
+        console.log(error)
+      }
     }
   }
 }

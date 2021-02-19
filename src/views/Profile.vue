@@ -10,7 +10,6 @@
 import { API } from 'aws-amplify'
 import { getProfileByOwner } from '@/graphql/queries'
 import { onUpdateProfile } from '@/graphql/subscriptions'
-import { updateProfile } from '@/graphql/mutations'
 
 export default {
   name: "Profile",
@@ -27,6 +26,7 @@ export default {
   },
   mounted() {
     this.getProfile()
+
     const onUpdateProfileSub = API.graphql({ query: onUpdateProfile }).subscribe({
       next: () => this.getProfile()
     })
@@ -41,17 +41,27 @@ export default {
   },
   methods: {
     async getProfile() {
-      const profile = await API.graphql({ query: getProfileByOwner, variables: { owner: this.$route.params.username }})
+      try {
+        const profile = await API.graphql({ query: getProfileByOwner, variables: {
+          owner: this.$route.params.username
+        }})
 
-      if (profile.data.getProfileByOwner.items.length) {
-        this.profile = profile.data.getProfileByOwner.items[0]
+        if (profile.data.getProfileByOwner.items.length) {
+          this.profile = profile.data.getProfileByOwner.items[0]
+        }
+      } catch (error) {
+        if (error.data.getProfileByOwner.items.length) {
+          this.profile = error.data.getProfileByOwner.items[0]
+        }
       }
-    },
-    async setTwitchUsername() {
-      await API.graphql({ query: updateProfile, variables: {input: {
-        id: this.user.attributes.sub,
-        twitchUsername: this.twitchUsername
-      }}})
+    }
+  },
+  watch: {
+    $route(to, from) {
+      // Make sure data gets updated on params change
+      if (from.name === to.name) {
+        this.getProfile()
+      }
     }
   }
 }

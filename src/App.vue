@@ -1,16 +1,11 @@
 <template>
-  <Header/>
-  <div class="container mx-auto px-4">
-    <router-view/>
-  </div>
+  <router-view/>
 </template>
 
 <script>
-import Header from "@/components/Header.vue"
 
 export default {
-  name: "App",
-  components: { Header },
+  name: 'App',
   mounted() {
     this.$store.dispatch("auth/loginCheck")
   }
@@ -20,7 +15,7 @@ export default {
 <style>
 #app {@apply font-sans subpixel-antialiased;}
 
-.btn {@apply inline-flex items-center px-4 py-2 rounded-md font-semibold;}
+.btn {@apply inline-flex items-center px-4 py-2 rounded-md font-semibold cursor-pointer;}
 .btn-login {@apply mr-4 text-indigo-100 hover:bg-gray-900 hover:text-white transition ease-in duration-100;}
 .btn-signup {@apply bg-yellow-500 text-gray-800 hover:bg-gray-900 hover:text-white transition ease-in duration-100;}
 

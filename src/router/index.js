@@ -1,45 +1,94 @@
 import { Auth } from 'aws-amplify'
 import { createRouter, createWebHistory } from 'vue-router'
+import MainLayout from '@/views/layouts/MainLayout.vue'
+import StreamLayout from '@/views/layouts/StreamLayout.vue'
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: () => import('@/views/Home.vue')
+    component: MainLayout,
+    children: [{
+      path: '',
+      name: 'Home',
+      component: () => import('@/views/Home.vue')
+    }]
   },
   {
     path: '/about',
-    name: 'About',
-    component: () => import('@/views/About.vue'),
-    meta: {requiresAuth: true}
+    component: MainLayout,
+    children: [{
+      path: '',
+      name: 'About',
+      component: () => import('@/views/About.vue')
+    }],
+    meta: { requiresAuth: true }
   },
   {
     path: '/profile/:username',
-    name: 'Profile',
-    component: () => import('@/views/Profile.vue'),
-    meta: {requiresAuth: true}
+    component: MainLayout,
+    children: [{
+      path: '',
+      name: 'Profile',
+      component: () => import('@/views/Profile.vue')
+    }],
+    meta: { requiresAuth: true }
   },
   {
     path: '/login',
-    name: 'Login',
-    component: () => import('@/views/Login.vue')
+    component: MainLayout,
+    children: [{
+      path: '',
+      name: 'Login',
+      component: () => import('@/views/Login.vue')
+    }]
   },
   {
     path: '/signup',
-    name: 'Signup',
-    component: () => import('@/views/Signup.vue')
+    component: MainLayout,
+    children: [{
+      path: '',
+      name: 'Signup',
+      component: () => import('@/views/Signup.vue')
+    }]
   },
   {
     path: '/stream',
-    name: 'Stream',
-    component: () => import('@/views/Stream.vue'),
-    meta: {requiresAuth: true}
+    component: MainLayout,
+    children: [{
+      path: '',
+      name: 'Stream',
+      component: () => import('@/views/Stream.vue')
+    }],
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/stream/:token',
+    component: StreamLayout,
+    children: [{
+      path: '',
+      name: 'StreamLink',
+      component: () => import('@/views/StreamLink.vue')
+    }]
   },
   {
     path: '/advertise',
-    name: 'Advertise',
-    component: () => import('@/views/Advertise.vue'),
-    meta: {requiresAuth: true}
+    component: MainLayout,
+    children: [{
+      path: '',
+      name: 'Advertise',
+      component: () => import('@/views/Advertise.vue')
+    }],
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin-panel',
+    component: MainLayout,
+    children: [{
+      path: '',
+      name: 'AdminPanel',
+      component: () => import('@/views/AdminPanel.vue')
+    }],
+    meta: { requiresAuth: true, requiresAdmin: true }
   }
 ]
 
@@ -50,10 +99,23 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin)
   const isAuthenticated = await Auth.currentUserInfo()
+  let isAdmin = false
+
+  // Check if user is in Admin group
+  if (requiresAdmin && isAuthenticated) {
+    const session = await Auth.currentSession()
+
+    if (session.accessToken.payload['cognito:groups']) {
+      isAdmin = session.accessToken.payload['cognito:groups'].includes('Admin')
+    }
+  }
 
   if (requiresAuth && !isAuthenticated) {
-    next("/login")
+    next('/login')
+  } else if (requiresAdmin && !isAdmin) {
+    next('/')
   } else {
     next()
   }

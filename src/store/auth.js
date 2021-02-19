@@ -3,18 +3,22 @@ import { Auth } from 'aws-amplify'
 export const auth = {
   namespaced: true,
   state: {
-    user: null
+    user: null,
+    groups: []
   },
   mutations: {
     setUser(state, payload) {
       state.user = payload
+    },
+    setGroups(state, payload) {
+      state.groups = payload
     }
   },
   actions: {
     async login({dispatch}, {username, password}) {
       try {
         await Auth.signIn(username, password)
-        dispatch("loginCheck")
+        dispatch('loginCheck')
         return Promise.resolve()
       } catch (error) {
         return Promise.reject(error)
@@ -23,14 +27,19 @@ export const auth = {
     async loginCheck({commit}) {
       try {
         const user = await Auth.currentUserInfo()
-        commit("setUser", user)
-        return Promise.resolve()
+        commit('setUser', user)
+        
+        const session = await Auth.currentSession()
+
+        if (session.accessToken.payload['cognito:groups']) {
+          commit('setGroups', session.accessToken.payload['cognito:groups'])
+        }
       } catch (error) {
-        return Promise.reject(error)
+        console.log(error)
       }
     },
     async logout({commit}) {
-      commit("setUser", null)
+      commit('setUser', null)
       try {
         await Auth.signOut()
         return Promise.resolve()
@@ -64,6 +73,9 @@ export const auth = {
   getters: {
     user(state) {
       return state.user
+    },
+    groups(state) {
+      return state.groups
     }
   }
 }

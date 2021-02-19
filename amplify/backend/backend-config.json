@@ -26,23 +26,23 @@
           ]
         }
       }
-    }
-  },
-  "function": {
-    "streamStatus": {
-      "build": true,
+    },
+    "streamApi": {
+      "service": "API Gateway",
       "providerPlugin": "awscloudformation",
-      "service": "Lambda",
       "dependsOn": [
         {
-          "category": "api",
-          "resourceName": "adstr",
+          "category": "function",
+          "resourceName": "streamFunctions",
           "attributes": [
-            "GraphQLAPIIdOutput"
+            "Name",
+            "Arn"
           ]
         }
       ]
-    },
+    }
+  },
+  "function": {
     "createProfile": {
       "build": true,
       "providerPlugin": "awscloudformation",
@@ -56,6 +56,41 @@
           ]
         }
       ]
+    },
+    "streamFunctions": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "api",
+          "resourceName": "adstr",
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ]
+        }
+      ]
+    },
+    "streamStatus": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "api",
+          "resourceName": "adstr",
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ]
+        }
+      ]
+    }
+  },
+  "predictions": {},
+  "storage": {
+    "adverts": {
+      "service": "S3",
+      "providerPlugin": "awscloudformation"
     }
   }
 }

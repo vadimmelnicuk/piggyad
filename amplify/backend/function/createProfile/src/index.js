@@ -6,35 +6,29 @@
 	REGION
 Amplify Params - DO NOT EDIT */
 
-var aws = require('aws-sdk')
-var ddb = new aws.DynamoDB()
+var AWS = require('aws-sdk')
+var docClient = new AWS.DynamoDB.DocumentClient()
 
 exports.handler = async (event, context) => {
   if (event.request.userAttributes.sub) {
-    let date = new Date()
-    let params = {
-      Item: {
-          'id': {S: event.request.userAttributes.sub},
-          '__typename': {S: 'Profile'},
-          'owner': {S: event.userName},
-          'createdAt': {S: date.toISOString()},
-          'updatedAt': {S: date.toISOString()}
-      },
-      TableName: process.env.API_ADSTR_PROFILETABLE_NAME
-    }
-
-    // Call DynamoDB
     try {
-      await ddb.putItem(params).promise()
+      await docClient.put({
+        TableName: process.env.API_ADSTR_PROFILETABLE_NAME,
+        Item: {
+          'id': event.request.userAttributes.sub,
+          'owner': event.userName
+        }
+      }).promise()
+
       console.log("Success")
     } catch (err) {
-        console.log("Error", err)
+      console.log("Error", err)
     }
 
     console.log("Success: Everything executed correctly")
-    context.done(null, event)
   } else {
     console.log("Error: Nothing was written to DynamoDB")
-    context.done(null, event)
   }
+
+  context.done(null, event)
 }

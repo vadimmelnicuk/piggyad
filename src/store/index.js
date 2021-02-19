@@ -1,17 +1,12 @@
 import { createStore } from 'vuex'
 import { auth } from '@/store/auth'
+import { stream } from '@/store/stream'
+import { advert } from '@/store/advert'
 
 export default createStore({
-  state: {
-
-  },
-  mutations: {
-
-  },
-  actions: {
-
-  },
   modules: {
-    auth
+    auth,
+    stream,
+    advert
   }
 })

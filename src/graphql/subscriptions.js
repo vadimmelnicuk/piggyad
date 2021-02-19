@@ -6,18 +6,20 @@ export const onCreateProfile = /* GraphQL */ `
     onCreateProfile {
       id
       owner
+      createdAt
+      updatedAt
       stream {
         id
         owner
         username
         platform
-        varified
+        verified
         online
+        urlToken
+        verificationToken
         createdAt
         updatedAt
       }
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -26,18 +28,20 @@ export const onUpdateProfile = /* GraphQL */ `
     onUpdateProfile {
       id
       owner
+      createdAt
+      updatedAt
       stream {
         id
         owner
         username
         platform
-        varified
+        verified
         online
+        urlToken
+        verificationToken
         createdAt
         updatedAt
       }
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -46,16 +50,84 @@ export const onDeleteProfile = /* GraphQL */ `
     onDeleteProfile {
       id
       owner
+      createdAt
+      updatedAt
       stream {
         id
         owner
         username
         platform
-        varified
+        verified
         online
+        urlToken
+        verificationToken
         createdAt
         updatedAt
       }
+    }
+  }
+`;
+export const onCreateSecret = /* GraphQL */ `
+  subscription OnCreateSecret {
+    onCreateSecret {
+      id
+      name
+      key
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateSecret = /* GraphQL */ `
+  subscription OnUpdateSecret {
+    onUpdateSecret {
+      id
+      name
+      key
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteSecret = /* GraphQL */ `
+  subscription OnDeleteSecret {
+    onDeleteSecret {
+      id
+      name
+      key
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onCreateNote = /* GraphQL */ `
+  subscription OnCreateNote {
+    onCreateNote {
+      id
+      owner
+      body
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateNote = /* GraphQL */ `
+  subscription OnUpdateNote {
+    onUpdateNote {
+      id
+      owner
+      body
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteNote = /* GraphQL */ `
+  subscription OnDeleteNote {
+    onDeleteNote {
+      id
+      owner
+      body
       createdAt
       updatedAt
     }
@@ -68,8 +140,10 @@ export const onCreateStream = /* GraphQL */ `
       owner
       username
       platform
-      varified
+      verified
       online
+      urlToken
+      verificationToken
       createdAt
       updatedAt
     }
@@ -82,8 +156,10 @@ export const onUpdateStream = /* GraphQL */ `
       owner
       username
       platform
-      varified
+      verified
       online
+      urlToken
+      verificationToken
       createdAt
       updatedAt
     }
@@ -96,41 +172,55 @@ export const onDeleteStream = /* GraphQL */ `
       owner
       username
       platform
-      varified
+      verified
       online
+      urlToken
+      verificationToken
       createdAt
       updatedAt
     }
   }
 `;
-export const onCreateNote = /* GraphQL */ `
-  subscription OnCreateNote {
-    onCreateNote {
+export const onCreateAdvert = /* GraphQL */ `
+  subscription OnCreateAdvert {
+    onCreateAdvert {
       id
-      body
       owner
+      title
+      type
+      asset {
+        key
+      }
       createdAt
       updatedAt
     }
   }
 `;
-export const onUpdateNote = /* GraphQL */ `
-  subscription OnUpdateNote {
-    onUpdateNote {
+export const onUpdateAdvert = /* GraphQL */ `
+  subscription OnUpdateAdvert {
+    onUpdateAdvert {
       id
-      body
       owner
+      title
+      type
+      asset {
+        key
+      }
       createdAt
       updatedAt
     }
   }
 `;
-export const onDeleteNote = /* GraphQL */ `
-  subscription OnDeleteNote {
-    onDeleteNote {
+export const onDeleteAdvert = /* GraphQL */ `
+  subscription OnDeleteAdvert {
+    onDeleteAdvert {
       id
-      body
       owner
+      title
+      type
+      asset {
+        key
+      }
       createdAt
       updatedAt
     }

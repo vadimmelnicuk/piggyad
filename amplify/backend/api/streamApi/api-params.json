@@ -1,0 +1,39 @@
+{
+    "paths": [
+        {
+            "name": "/stream",
+            "lambdaFunction": "streamFunctions",
+            "privacy": {
+                "private": true,
+                "auth": [
+                    "/POST",
+                    "/GET"
+                ]
+            }
+        }
+    ],
+    "resourceName": "streamApi",
+    "apiName": "streamApi",
+    "functionArns": [
+        {
+            "lambdaFunction": "streamFunctions"
+        }
+    ],
+    "privacy": {
+        "auth": 1,
+        "unauth": 0,
+        "authRoleName": "amplify-adstr-dev-232211-authRole",
+        "unAuthRoleName": "amplify-adstr-dev-232211-unauthRole"
+    },
+    "dependsOn": [
+        {
+            "category": "function",
+            "resourceName": "streamFunctions",
+            "attributes": [
+                "Name",
+                "Arn"
+            ]
+        }
+    ],
+    "uuid": "ec8c9277"
+}

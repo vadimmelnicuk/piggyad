@@ -8,6 +8,7 @@
         <router-link v-if="user" to="/stream" class="menu-link">Stream</router-link>
         <router-link v-if="user" to="/advertise" class="menu-link">Advertise</router-link>
         <router-link to="/about" class="menu-link">About</router-link>
+        <router-link v-if="isAdmin" to="/admin-panel" class="menu-link">Admin</router-link>
       </div>
       <div v-if="!user" class="flex items-center">
         <router-link to="/login" class="btn btn-login">Login</router-link>
@@ -23,21 +24,25 @@
 
 <script>
 export default {
-  name: "Header",
+  name: 'Header',
   data() {
     return {
-      error: ""
+      error: ''
     }
   },
   computed: {
     user() {
-      return this.$store.getters["auth/user"]
+      return this.$store.getters['auth/user']
+    },
+    isAdmin() {
+      const groups = this.$store.getters['auth/groups']
+      return groups.includes('Admin')
     }
   },
   methods: {
     async logout() {
       try {
-        await this.$store.dispatch("auth/logout")
+        await this.$store.dispatch('auth/logout')
         this.$router.go()
       } catch (error) {
         console.log(error)

@@ -1,114 +1,139 @@
 /* Amplify Params - DO NOT EDIT
 	API_ADSTR_GRAPHQLAPIIDOUTPUT
+	API_ADSTR_SECRETTABLE_ARN
+	API_ADSTR_SECRETTABLE_NAME
 	API_ADSTR_STREAMTABLE_ARN
 	API_ADSTR_STREAMTABLE_NAME
 	ENV
 	REGION
 Amplify Params - DO NOT EDIT */
 
-const aws = require('aws-sdk')
-const sm = new aws.SecretsManager({ region: process.env.REGION })
-const axios = require('axios')
+var aws = require('aws-sdk')
+var docClient = new aws.DynamoDB.DocumentClient()
+var { getTwitchAccessToken, validateTwitchAccessToken, getTwitchStreamersData } = require('twitch')
 
+var twitchAccessToken = null
+var twitchClientId = null
+var twitchClientSecret = null
 
 exports.handler = async (event, context) => {
-  const secrets = await getSecrets("dev_adstr_keys")
+  // Check whether secrets were previously stored
+  if (!twitchAccessToken) {
+    await getSecrets()
+  }
 
-  console.log(secrets)
+  // Check whether twitchAccessToken key exists
+  if (!twitchAccessToken.key) {
+    // Get token
+    const twitchAccessTokenResponse = await getTwitchAccessToken(twitchClientId, twitchClientSecret)
 
-  // if (!twitchAccessToken) {
-  //   const twitchAccessTokenResponse = await getTwitchAccessToken()
-    
-  //   if (twitchAccessTokenResponse.status == 200) {
-  //     console.log(twitchAccessTokenResponse)
-  //   }
-  // } else {
-  //   let twitchAccessTokenValid = await validateTwitchAccessToken()
+    if (twitchAccessTokenResponse.status == 200) {      
+      twitchAccessToken.key = twitchAccessTokenResponse.data.access_token
+      await updateTwitchAccessToken()
+    }
+  }
 
-  //   if (twitchAccessTokenValid) {
-  //     const twitchStreamerDataResponse = await getTwitchStreamerData()
+  const twitchAccessTokenValid = await validateTwitchAccessToken(twitchClientId, twitchAccessToken)
 
-  //     if (twitchStreamerDataResponse.status == 200) {
-  //       console.log(twitchStreamerDataResponse.data)
-  //     }
-  //   } else {
-  //     const renewTwitchAccessTokenResponse = await renewTwitchAccessToken()
-  //   }
-  // }
+  if (twitchAccessTokenValid) {
+    // Get Streams TODO: limit the query to 100 streams in the future
+    const streams = await getStreams()
 
+    if (streams.Items.length) {
+      const twitchStreamerDataResponse = await getTwitchStreamersData(twitchClientId, twitchAccessToken, streams)
+
+      if (twitchStreamerDataResponse.status == 200) {
+        await updateStreamsStatus(streams, twitchStreamerDataResponse.data.data) 
+      }
+    }
+  } else {
+    const renewTwitchAccessTokenResponse = await renewTwitchAccessToken()
+  }
+  
   context.done(null, event)
 }
 
-const getSecrets = async (secretId) => {
-  return await new Promise((resolve, reject) => {
-    sm.getSecretValue({ SecretId: secretId }, (error, result) => {
-      if (error) {
-        reject(error)
-      } else {
-        resolve(JSON.parse(result.SecretString))
-      }
-    })
-  })
+async function getSecrets() {
+  try {
+    const data = await docClient.scan({ TableName: process.env.API_ADSTR_SECRETTABLE_NAME }).promise()
+    
+    if (data.Items.length) {
+      twitchAccessToken = data.Items.find(secret => { return secret.name === 'twitchAccessToken' })
+      twitchClientId = data.Items.find(secret => { return secret.name === 'twitchClientId' })
+      twitchClientSecret = data.Items.find(secret => { return secret.name === 'twitchClientSecret' })
+    }
+
+    return data
+  } catch (error) {
+    console.log(error)
+  }
 }
 
-const updateSecrets = async (secretId) => {
+async function getStreams() {
+  try {
+    const data = await docClient.scan({ TableName: process.env.API_ADSTR_STREAMTABLE_NAME }).promise()
+
+    return data
+  } catch (error) {
+    return error
+  }
+}
+
+async function renewTwitchAccessToken() {
+  console.log("Renewing Twitch access token")
   
 }
 
-const validateTwitchAccessToken = async () => {
-  console.log("Validating Twitch access token")
-
+async function updateTwitchAccessToken() {
+  console.log("Updating Twitch access token")
+  
   try {
-    const response = await axios({
-      method: "GET",
-      url: "https://id.twitch.tv/oauth2/validate",
-      headers: {
-        "Authorization": "Bearer " + twitchAccessToken
-      }
-    })
-
-    console.log("Twitch access token is valid")
-    return true
-  } catch (error) {
-    return false
-  }
-}
-
-const getTwitchStreamerData = async () => {
-  console.log("Getting Twitch streamer data")
-
-  try {
-    const response = await axios({
-      method: "GET",
-      url: "https://api.twitch.tv/helix/streams?user_login=vadimcchi",
-      headers: {
-        "client-id": process.env.API_TWITCH_CLIENTID,
-        "Authorization": "Bearer " + twitchAccessToken
-      }
-    })
-
+    const response = await docClient.update({
+      TableName: process.env.API_ADSTR_SECRETTABLE_NAME,
+      Key: { 'id': twitchAccessToken.id },
+      UpdateExpression: 'set #key=:k',
+      ExpressionAttributeNames: { '#key': 'key' },
+      ExpressionAttributeValues: { ':k': twitchAccessToken.key }
+    }).promise()
+    
     return response
   } catch (error) {
     return error
   }
 }
 
-const getTwitchAccessToken = async () => {
-  console.log("Getting Twitch access token")
+async function updateStreamsStatus(streams, streamsCurrentState) {
+  console.log("Updating streams status")
 
-  try {
-    const response = await axios({
-      method: "POST",
-      url: "https://id.twitch.tv/oauth2/token?client_id=" + process.env.API_TWITCH_CLIENTID + "&client_secret=" + process.env.API_TWITCH_CLIENTSECRET + "&grant_type=client_credentials"
-    })
+  for (const stream of streams.Items) {
+    var online = false
 
-    twitchAccessToken = response.data.access_token
-    return response
-  } catch (error) {
-    return error
+    const streamCurrentState = streamsCurrentState.find(data => { return data.user_login === stream.username })
+
+    if (streamCurrentState) {
+      online = true
+    }
+
+    console.log('username: ' + stream.username + ' stream: ' + stream.online + ' online: ' + online)
+
+    if (stream.online !== online) {
+      await setStreamOnlineStatus(stream.id, online)
+    }
   }
 }
 
-const renewTwitchAccessToken = async () => {
-  console.log("Renewing Twitch access token")
+async function setStreamOnlineStatus(id, online) {
+  console.log("Changing stream status")
+  
+  try {
+    await docClient.update({
+      TableName: process.env.API_ADSTR_STREAMTABLE_NAME,
+      Key: { 'id': id },
+      UpdateExpression: 'set #online=:online',
+      ExpressionAttributeNames: { '#online': 'online' },
+      ExpressionAttributeValues: { ':online': online }
+    }).promise()
+  } catch (error) {
+    console.log(error)
+  }
 }

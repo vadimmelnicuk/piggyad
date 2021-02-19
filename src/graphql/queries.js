@@ -1,81 +1,28 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const getProfile = /* GraphQL */ `
-  query GetProfile($id: ID!) {
-    getProfile(id: $id) {
+export const getSecret = /* GraphQL */ `
+  query GetSecret($id: ID!) {
+    getSecret(id: $id) {
       id
-      owner
-      stream {
-        id
-        owner
-        username
-        platform
-        varified
-        online
-        createdAt
-        updatedAt
-      }
+      name
+      key
       createdAt
       updatedAt
     }
   }
 `;
-export const listProfiles = /* GraphQL */ `
-  query ListProfiles(
-    $filter: ModelProfileFilterInput
+export const listSecrets = /* GraphQL */ `
+  query ListSecrets(
+    $filter: ModelSecretFilterInput
     $limit: Int
     $nextToken: String
   ) {
-    listProfiles(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    listSecrets(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
-        owner
-        stream {
-          id
-          owner
-          username
-          platform
-          varified
-          online
-          createdAt
-          updatedAt
-        }
-        createdAt
-        updatedAt
-      }
-      nextToken
-    }
-  }
-`;
-export const getStream = /* GraphQL */ `
-  query GetStream($id: ID!) {
-    getStream(id: $id) {
-      id
-      owner
-      username
-      platform
-      varified
-      online
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const listStreams = /* GraphQL */ `
-  query ListStreams(
-    $filter: ModelStreamFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listStreams(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        owner
-        username
-        platform
-        varified
-        online
+        name
+        key
         createdAt
         updatedAt
       }
@@ -101,16 +48,44 @@ export const getProfileByOwner = /* GraphQL */ `
       items {
         id
         owner
+        createdAt
+        updatedAt
         stream {
           id
           owner
           username
           platform
-          varified
+          verified
           online
+          urlToken
+          verificationToken
           createdAt
           updatedAt
         }
+      }
+      nextToken
+    }
+  }
+`;
+export const getSecretByName = /* GraphQL */ `
+  query GetSecretByName(
+    $name: String
+    $sortDirection: ModelSortDirection
+    $filter: ModelSecretFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    getSecretByName(
+      name: $name
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        name
+        key
         createdAt
         updatedAt
       }
@@ -122,8 +97,8 @@ export const getNote = /* GraphQL */ `
   query GetNote($id: ID!) {
     getNote(id: $id) {
       id
-      body
       owner
+      body
       createdAt
       updatedAt
     }
@@ -138,8 +113,115 @@ export const listNotes = /* GraphQL */ `
     listNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
       items {
         id
-        body
         owner
+        body
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const listStreams = /* GraphQL */ `
+  query ListStreams(
+    $filter: ModelStreamFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listStreams(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        owner
+        username
+        platform
+        verified
+        online
+        urlToken
+        verificationToken
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getStream = /* GraphQL */ `
+  query GetStream($id: ID!) {
+    getStream(id: $id) {
+      id
+      owner
+      username
+      platform
+      verified
+      online
+      urlToken
+      verificationToken
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const getStreamByToken = /* GraphQL */ `
+  query GetStreamByToken(
+    $urlToken: String
+    $sortDirection: ModelSortDirection
+    $filter: ModelStreamFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    getStreamByToken(
+      urlToken: $urlToken
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        owner
+        username
+        platform
+        verified
+        online
+        urlToken
+        verificationToken
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getAdvert = /* GraphQL */ `
+  query GetAdvert($id: ID!) {
+    getAdvert(id: $id) {
+      id
+      owner
+      title
+      type
+      asset {
+        key
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listAdverts = /* GraphQL */ `
+  query ListAdverts(
+    $filter: ModelAdvertFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listAdverts(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        owner
+        title
+        type
+        asset {
+          key
+        }
         createdAt
         updatedAt
       }

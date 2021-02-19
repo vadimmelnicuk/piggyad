@@ -8,8 +8,8 @@ export const createNote = /* GraphQL */ `
   ) {
     createNote(input: $input, condition: $condition) {
       id
-      body
       owner
+      body
       createdAt
       updatedAt
     }
@@ -22,8 +22,8 @@ export const updateNote = /* GraphQL */ `
   ) {
     updateNote(input: $input, condition: $condition) {
       id
-      body
       owner
+      body
       createdAt
       updatedAt
     }
@@ -36,8 +36,8 @@ export const deleteNote = /* GraphQL */ `
   ) {
     deleteNote(input: $input, condition: $condition) {
       id
-      body
       owner
+      body
       createdAt
       updatedAt
     }
@@ -51,18 +51,20 @@ export const createProfile = /* GraphQL */ `
     createProfile(input: $input, condition: $condition) {
       id
       owner
+      createdAt
+      updatedAt
       stream {
         id
         owner
         username
         platform
-        varified
+        verified
         online
+        urlToken
+        verificationToken
         createdAt
         updatedAt
       }
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -74,18 +76,20 @@ export const updateProfile = /* GraphQL */ `
     updateProfile(input: $input, condition: $condition) {
       id
       owner
+      createdAt
+      updatedAt
       stream {
         id
         owner
         username
         platform
-        varified
+        verified
         online
+        urlToken
+        verificationToken
         createdAt
         updatedAt
       }
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -97,18 +101,20 @@ export const deleteProfile = /* GraphQL */ `
     deleteProfile(input: $input, condition: $condition) {
       id
       owner
+      createdAt
+      updatedAt
       stream {
         id
         owner
         username
         platform
-        varified
+        verified
         online
+        urlToken
+        verificationToken
         createdAt
         updatedAt
       }
-      createdAt
-      updatedAt
     }
   }
 `;
@@ -122,8 +128,10 @@ export const createStream = /* GraphQL */ `
       owner
       username
       platform
-      varified
+      verified
       online
+      urlToken
+      verificationToken
       createdAt
       updatedAt
     }
@@ -139,8 +147,10 @@ export const updateStream = /* GraphQL */ `
       owner
       username
       platform
-      varified
+      verified
       online
+      urlToken
+      verificationToken
       createdAt
       updatedAt
     }
@@ -156,8 +166,106 @@ export const deleteStream = /* GraphQL */ `
       owner
       username
       platform
-      varified
+      verified
       online
+      urlToken
+      verificationToken
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const createAdvert = /* GraphQL */ `
+  mutation CreateAdvert(
+    $input: CreateAdvertInput!
+    $condition: ModelAdvertConditionInput
+  ) {
+    createAdvert(input: $input, condition: $condition) {
+      id
+      owner
+      title
+      type
+      asset {
+        key
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateAdvert = /* GraphQL */ `
+  mutation UpdateAdvert(
+    $input: UpdateAdvertInput!
+    $condition: ModelAdvertConditionInput
+  ) {
+    updateAdvert(input: $input, condition: $condition) {
+      id
+      owner
+      title
+      type
+      asset {
+        key
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteAdvert = /* GraphQL */ `
+  mutation DeleteAdvert(
+    $input: DeleteAdvertInput!
+    $condition: ModelAdvertConditionInput
+  ) {
+    deleteAdvert(input: $input, condition: $condition) {
+      id
+      owner
+      title
+      type
+      asset {
+        key
+      }
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const createSecret = /* GraphQL */ `
+  mutation CreateSecret(
+    $input: CreateSecretInput!
+    $condition: ModelSecretConditionInput
+  ) {
+    createSecret(input: $input, condition: $condition) {
+      id
+      name
+      key
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateSecret = /* GraphQL */ `
+  mutation UpdateSecret(
+    $input: UpdateSecretInput!
+    $condition: ModelSecretConditionInput
+  ) {
+    updateSecret(input: $input, condition: $condition) {
+      id
+      name
+      key
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteSecret = /* GraphQL */ `
+  mutation DeleteSecret(
+    $input: DeleteSecretInput!
+    $condition: ModelSecretConditionInput
+  ) {
+    deleteSecret(input: $input, condition: $condition) {
+      id
+      name
+      key
       createdAt
       updatedAt
     }

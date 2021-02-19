@@ -8,32 +8,33 @@
 
 <script>
 export default {
-  name: "Login",
+  name: 'Login',
   data() {
     return {
-      username: "",
-      password: "",
-      error: ""
+      username: '',
+      password: '',
+      error: ''
     }
   },
   mounted() {
-    const user = this.$store.getters["auth/user"]
+    const user = this.$store.getters['auth/user']
     if (user) {
-      this.$router.push("/")
+      this.$router.push('/')
     }
   },
   computed: {
     user() {
-      return this.$store.getters["auth/user"]
+      return this.$store.getters['auth/user']
     }
   },
   methods: {
     async login() {
       try {
-        await this.$store.dispatch("auth/login", {
+        await this.$store.dispatch('auth/login', {
           username: this.username,
           password: this.password
         })
+        
         this.$router.go()
       } catch (error) {
         console.log(error)
