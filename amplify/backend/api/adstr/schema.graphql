@@ -1,9 +1,9 @@
 type Note
 @model
 @auth (rules: [
-  { allow: owner, operations: [create, update, delete] },
-  { allow: private, operations: [read] },
-  { allow: public, operations: [read], provider: iam }
+  {allow: owner, operations: [create, update, delete]},
+  {allow: private, operations: [read], provider: iam},
+  {allow: public, operations: [read], provider: iam}
 ])
 {
   id: ID!
@@ -12,25 +12,27 @@ type Note
 }
 
 type Profile
-@model (queries: null)
+@model
 @auth (rules: [
-  { allow: owner, operations: [update] },
-  { allow: private, operations: [read] }
+  {allow: owner, operations: [update]},
+  {allow: private, operations: [read]}
 ])
 @key (name: "getProfileByOwner", fields: ["owner"], queryField: "getProfileByOwner")
 {
   id: ID!
   owner: String
-  stream: Stream @connection @auth (rules: [{ allow: owner, operations: [create, read, update, delete] }])
+  stream: Stream @connection @auth (rules: [{allow: owner}])
 }
 
 type Stream
-@model
+@model(subscriptions: {level: public})
 @auth (rules: [
-  { allow: owner, operations: [create, update, delete] },
-  { allow: private, operations: [read] },
-  { allow: public, operations: [read], provider: iam }
+  {allow: groups, groups: ["Admin"]},
+  {allow: owner},
+  {allow: private, operations: [read]},
+  {allow: public, operations: [read], provider: iam}
 ])
+@key (name: "getStreamByOwner", fields: ["owner"], queryField: "getStreamByOwner")
 @key (name: "getStreamByToken", fields: ["urlToken"], queryField: "getStreamByToken")
 {
   id: ID!
@@ -46,22 +48,45 @@ type Stream
 type Advert
 @model
 @auth (rules: [
-  { allow: owner, operations: [create, update, delete] },
-  { allow: private, operations: [read] },
-  { allow: public, operations: [read], provider: iam }
+  {allow: owner, operations: [create, update, delete]},
+  {allow: private, operations: [read]},
+  {allow: public, operations: [read], provider: iam}
 ])
+@key (name: "getAdvertsByOwner", fields: ["owner"], queryField: "getAdvertsByOwner")
 {
   id: ID!
   owner: String
   title: String!
   type: String
   asset: S3Object
+  status: AdvertStatus
+  impressions: Int
+  lastImpression: AWSDateTime
+}
+
+enum AdvertStatus {
+  INACTIVE
+  ACTIVE
+}
+
+type AdvertJob
+@model
+@auth (rules: [
+  {allow: private, operations: [read]},
+  {allow: public, operations: [read], provider: iam}
+])
+{
+  id: ID!
+  streamer: String!
+  stream: Stream! @connection
+  advert: Advert! @connection
+  completed: Boolean!
 }
 
 type Secret
 @model
 @auth (rules: [
-  { allow: groups, groups: ["Admin"] }
+  {allow: groups, groups: ["Admin"]}
 ])
 @key (name: "getSecretByName", fields: ["name"], queryField: "getSecretByName")
 {
@@ -70,7 +95,17 @@ type Secret
   key: String
 }
 
+type Mutation {
+  streamResolver(id: ID!): Stream @aws_iam @aws_cognito_user_pools
+}
+
+type Subscription {
+  onUpdateStreamById(id: ID!): Stream @aws_iam @aws_cognito_user_pools
+  @aws_subscribe(mutations: ["streamResolver"])
+}
+
 type S3Object @aws_iam @aws_cognito_user_pools
 {
   key: String!
+  identity: String!
 }

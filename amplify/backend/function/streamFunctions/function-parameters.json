@@ -1,5 +1,13 @@
 {
   "permissions": {
+    "api": {
+      "adstr": [
+        "create",
+        "read",
+        "update",
+        "delete"
+      ]
+    },
     "storage": {
       "Stream:@model(appsync)": [
         "read",

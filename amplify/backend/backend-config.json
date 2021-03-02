@@ -66,12 +66,27 @@
           "category": "api",
           "resourceName": "adstr",
           "attributes": [
-            "GraphQLAPIIdOutput"
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
           ]
         }
       ]
     },
     "streamStatus": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda",
+      "dependsOn": [
+        {
+          "category": "api",
+          "resourceName": "adstr",
+          "attributes": [
+            "GraphQLAPIIdOutput"
+          ]
+        }
+      ]
+    },
+    "streamJobAllocation": {
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda",

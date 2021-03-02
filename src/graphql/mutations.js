@@ -1,6 +1,22 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const streamResolver = /* GraphQL */ `
+  mutation StreamResolver($id: ID!) {
+    streamResolver(id: $id) {
+      id
+      owner
+      username
+      platform
+      verified
+      online
+      urlToken
+      verificationToken
+      createdAt
+      updatedAt
+    }
+  }
+`;
 export const createNote = /* GraphQL */ `
   mutation CreateNote(
     $input: CreateNoteInput!
@@ -187,7 +203,11 @@ export const createAdvert = /* GraphQL */ `
       type
       asset {
         key
+        identity
       }
+      status
+      impressions
+      lastImpression
       createdAt
       updatedAt
     }
@@ -205,7 +225,11 @@ export const updateAdvert = /* GraphQL */ `
       type
       asset {
         key
+        identity
       }
+      status
+      impressions
+      lastImpression
       createdAt
       updatedAt
     }
@@ -223,9 +247,136 @@ export const deleteAdvert = /* GraphQL */ `
       type
       asset {
         key
+        identity
       }
+      status
+      impressions
+      lastImpression
       createdAt
       updatedAt
+    }
+  }
+`;
+export const createAdvertJob = /* GraphQL */ `
+  mutation CreateAdvertJob(
+    $input: CreateAdvertJobInput!
+    $condition: ModelAdvertJobConditionInput
+  ) {
+    createAdvertJob(input: $input, condition: $condition) {
+      id
+      streamer
+      completed
+      createdAt
+      updatedAt
+      stream {
+        id
+        owner
+        username
+        platform
+        verified
+        online
+        urlToken
+        verificationToken
+        createdAt
+        updatedAt
+      }
+      advert {
+        id
+        owner
+        title
+        type
+        asset {
+          key
+          identity
+        }
+        status
+        impressions
+        lastImpression
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
+export const updateAdvertJob = /* GraphQL */ `
+  mutation UpdateAdvertJob(
+    $input: UpdateAdvertJobInput!
+    $condition: ModelAdvertJobConditionInput
+  ) {
+    updateAdvertJob(input: $input, condition: $condition) {
+      id
+      streamer
+      completed
+      createdAt
+      updatedAt
+      stream {
+        id
+        owner
+        username
+        platform
+        verified
+        online
+        urlToken
+        verificationToken
+        createdAt
+        updatedAt
+      }
+      advert {
+        id
+        owner
+        title
+        type
+        asset {
+          key
+          identity
+        }
+        status
+        impressions
+        lastImpression
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
+export const deleteAdvertJob = /* GraphQL */ `
+  mutation DeleteAdvertJob(
+    $input: DeleteAdvertJobInput!
+    $condition: ModelAdvertJobConditionInput
+  ) {
+    deleteAdvertJob(input: $input, condition: $condition) {
+      id
+      streamer
+      completed
+      createdAt
+      updatedAt
+      stream {
+        id
+        owner
+        username
+        platform
+        verified
+        online
+        urlToken
+        verificationToken
+        createdAt
+        updatedAt
+      }
+      advert {
+        id
+        owner
+        title
+        type
+        asset {
+          key
+          identity
+        }
+        status
+        impressions
+        lastImpression
+        createdAt
+        updatedAt
+      }
     }
   }
 `;

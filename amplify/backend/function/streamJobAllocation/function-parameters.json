@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "storage": {
+      "Stream:@model(appsync)": [
+        "read"
+      ],
+      "Advert:@model(appsync)": [
+        "read"
+      ],
+      "AdvertJob:@model(appsync)": [
+        "create",
+        "read",
+        "update"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}

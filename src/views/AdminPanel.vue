@@ -2,17 +2,17 @@
   <div class="title">Admin Panel</div>
   <div>
     <div class="title">Add a secret</div>
-    <form v-on:submit.prevent="addSecret" class="w-full flex">
+    <form v-on:submit.prevent="addSecret">
       <input type="text" placeholder="Name" v-model="secret.name">
-      <input type="text" placeholder="Key" class="ml-2" v-model="secret.key">
-      <input type="submit" value="Add" class="flex-none ml-2 w-32">
+      <input type="text" placeholder="Key" v-model="secret.key">
+      <input type="submit" value="Add">
     </form>
   </div>
   <div>
     <div class="title">List of secrets</div>
     <div v-for="secret in secrets" v-bind:key="secret.id">
       {{secret.name}} : {{secret.key}}
-      <a v-on:click="deleteSecret(secret.id)" class="ml-2 px-2 bg-gray-100 border cursor-pointer">x</a>
+      <a v-on:click="deleteSecret(secret.id)">x</a>
     </div>
   </div>
 </template>

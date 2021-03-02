@@ -1,6 +1,57 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
+export const getProfile = /* GraphQL */ `
+  query GetProfile($id: ID!) {
+    getProfile(id: $id) {
+      id
+      owner
+      createdAt
+      updatedAt
+      stream {
+        id
+        owner
+        username
+        platform
+        verified
+        online
+        urlToken
+        verificationToken
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
+export const listProfiles = /* GraphQL */ `
+  query ListProfiles(
+    $filter: ModelProfileFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listProfiles(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        owner
+        createdAt
+        updatedAt
+        stream {
+          id
+          owner
+          username
+          platform
+          verified
+          online
+          urlToken
+          verificationToken
+          createdAt
+          updatedAt
+        }
+      }
+      nextToken
+    }
+  }
+`;
 export const getSecret = /* GraphQL */ `
   query GetSecret($id: ID!) {
     getSecret(id: $id) {
@@ -161,6 +212,37 @@ export const getStream = /* GraphQL */ `
     }
   }
 `;
+export const getStreamByOwner = /* GraphQL */ `
+  query GetStreamByOwner(
+    $owner: String
+    $sortDirection: ModelSortDirection
+    $filter: ModelStreamFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    getStreamByOwner(
+      owner: $owner
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        owner
+        username
+        platform
+        verified
+        online
+        urlToken
+        verificationToken
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
 export const getStreamByToken = /* GraphQL */ `
   query GetStreamByToken(
     $urlToken: String
@@ -192,21 +274,6 @@ export const getStreamByToken = /* GraphQL */ `
     }
   }
 `;
-export const getAdvert = /* GraphQL */ `
-  query GetAdvert($id: ID!) {
-    getAdvert(id: $id) {
-      id
-      owner
-      title
-      type
-      asset {
-        key
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
 export const listAdverts = /* GraphQL */ `
   query ListAdverts(
     $filter: ModelAdvertFilterInput
@@ -221,9 +288,145 @@ export const listAdverts = /* GraphQL */ `
         type
         asset {
           key
+          identity
         }
+        status
+        impressions
+        lastImpression
         createdAt
         updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getAdvert = /* GraphQL */ `
+  query GetAdvert($id: ID!) {
+    getAdvert(id: $id) {
+      id
+      owner
+      title
+      type
+      asset {
+        key
+        identity
+      }
+      status
+      impressions
+      lastImpression
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const getAdvertsByOwner = /* GraphQL */ `
+  query GetAdvertsByOwner(
+    $owner: String
+    $sortDirection: ModelSortDirection
+    $filter: ModelAdvertFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    getAdvertsByOwner(
+      owner: $owner
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        owner
+        title
+        type
+        asset {
+          key
+          identity
+        }
+        status
+        impressions
+        lastImpression
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getAdvertJob = /* GraphQL */ `
+  query GetAdvertJob($id: ID!) {
+    getAdvertJob(id: $id) {
+      id
+      streamer
+      completed
+      createdAt
+      updatedAt
+      stream {
+        id
+        owner
+        username
+        platform
+        verified
+        online
+        urlToken
+        verificationToken
+        createdAt
+        updatedAt
+      }
+      advert {
+        id
+        owner
+        title
+        type
+        asset {
+          key
+          identity
+        }
+        status
+        impressions
+        lastImpression
+        createdAt
+        updatedAt
+      }
+    }
+  }
+`;
+export const listAdvertJobs = /* GraphQL */ `
+  query ListAdvertJobs(
+    $filter: ModelAdvertJobFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listAdvertJobs(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        streamer
+        completed
+        createdAt
+        updatedAt
+        stream {
+          id
+          owner
+          username
+          platform
+          verified
+          online
+          urlToken
+          verificationToken
+          createdAt
+          updatedAt
+        }
+        advert {
+          id
+          owner
+          title
+          type
+          status
+          impressions
+          lastImpression
+          createdAt
+          updatedAt
+        }
       }
       nextToken
     }

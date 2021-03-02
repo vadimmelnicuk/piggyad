@@ -1,9 +1,11 @@
 <template>
-  <form v-if="!user" v-on:submit.prevent="login" class="mt-12 w-80 mx-auto">
-    <input type="text" placeholder="Username" v-model="username">
-    <input type="password" placeholder="Password" v-model="password">
-    <input type="submit" value="Login">
-  </form>
+  <div class="box padding-1 login-box">
+    <form v-if="!user" v-on:submit.prevent="login" class="flex login-form">
+      <input type="text" placeholder="Username" v-model="username" class="mb-05">
+      <input type="password" placeholder="Password" v-model="password" class="mb-05">
+      <input type="submit" value="Login" class="button">
+    </form>
+  </div>
 </template>
 
 <script>
@@ -46,5 +48,6 @@ export default {
 </script>
 
 <style scoped>
-
+.login-box {width: 400px; margin: 0 auto;}
+.login-form {flex-direction: column;}
 </style>

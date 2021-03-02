@@ -15,16 +15,19 @@ vue create adstr
 
 Use babel, eslint, router, vuex
 
+### ESLint disable unused variable errors
+Add to .eslintrc.js
+```
+rules: {
+  'no-unused-vars': 'off'
+}
+```
+
 ### Install dependencies
 ```
 npm install uuid
 npm install moment
-vue add tailwind
-```
-
-Add this to main.js
-```
-import './assets/tailwind.css'
+npm install @fortawesome/fontawesome-free
 ```
 
 ### Setup AWS Amplify

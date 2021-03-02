@@ -4,13 +4,19 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "aws-appsync": "^4.0.3",
     "aws-serverless-express": "^3.3.5",
+    "aws4": "^1.11.0",
     "axios": "^0.21.1",
     "body-parser": "^1.17.1",
-    "download-file": "^0.1.5",
+    "es6-promise": "^4.2.8",
     "express": "^4.15.2",
     "fluent-ffmpeg": "^2.1.2",
-    "twitch-m3u8": "^1.1.4"
+    "graphql-tag": "^2.11.0",
+    "https": "^1.0.0",
+    "isomorphic-fetch": "^3.0.0",
+    "twitch-m3u8": "^1.1.4",
+    "url": "^0.11.0"
   },
   "devDependencies": {},
   "scripts": {

@@ -1,18 +1,20 @@
 <template>
-  <form v-if="codeConfirm" v-on:submit.prevent="signupConfirm" class="mt-12 w-80 mx-auto">
-    <div class="text-center">
-      Please check your email for a confirmation code.
-    </div>
-    <input type="text" placeholder="Code" v-model="code">
-    <input type="submit" value="Confirm">
-  </form>
-  <form v-else v-on:submit.prevent="signup" class="mt-12 w-80 mx-auto">
-    <input type="text" placeholder="Username" v-model="username">
-    <input type="text" placeholder="Email" v-model="email">
-    <input type="password" placeholder="Password" v-model="password">
-    <input type="password" placeholder="Confirm password" v-model="passwordConfirm">
-    <input type="submit" value="Sign up">
-  </form>
+  <div class="box padding-1 sign-up-box">
+    <form v-if="codeConfirm" v-on:submit.prevent="signupConfirm" class="flex sign-up-form">
+      <div class="text-center">
+        Please check your email for a confirmation code.
+      </div>
+      <input type="text" placeholder="Code" v-model="code" class="mb-05">
+      <input type="submit" value="Confirm" class="button">
+    </form>
+    <form v-else v-on:submit.prevent="signup" class="flex sign-up-form">
+      <input type="text" placeholder="Username" v-model="username" class="mb-05">
+      <input type="text" placeholder="Email" v-model="email" class="mb-05">
+      <input type="password" placeholder="Password" v-model="password" class="mb-05">
+      <input type="password" placeholder="Confirm password" v-model="passwordConfirm" class="mb-05">
+      <input type="submit" value="Sign up" class="button">
+    </form>
+  </div>
 </template>
 
 <script>
@@ -72,6 +74,7 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+.sign-up-box {width: 400px; margin: 0 auto;}
+.sign-up-form {flex-direction: column;}
 </style>

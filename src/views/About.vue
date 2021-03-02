@@ -1,8 +1,4 @@
 <template>
-  <div class="title">
-    About
-  </div>
-  <div>
-    Streaming advertising platform
-  </div>
+  <div class="title">About</div>
+  Streaming advertising platform
 </template>

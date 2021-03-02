@@ -35,28 +35,32 @@ export default {
       }
     }
   },
+  computed: {
+    user() {
+      return this.$store.getters['auth/user']
+    }
+  },
   mounted() { 
     this.getNotes()
-    const createNoteSub = API.graphql({ query: onCreateNote, authMode: 'AWS_IAM' }).subscribe({
-      next: () => this.getNotes()
-    })
-    this.subscriptions.push(createNoteSub)
+  },
+  created() {
+    this.subscriptions.push(
+      API.graphql({query: onCreateNote, authMode: 'AWS_IAM'}).subscribe({
+        next: () => this.getNotes()
+      })
+    )
 
-    const deleteNoteSub = API.graphql({ query: onDeleteNote, authMode: 'AWS_IAM' }).subscribe({
-      next: () => this.getNotes()
-    })
-    this.subscriptions.push(deleteNoteSub)
+    this.subscriptions.push(
+      API.graphql({query: onDeleteNote, authMode: 'AWS_IAM'}).subscribe({
+        next: () => this.getNotes()
+      })
+    )
   },
   unmounted() {
     if(this.subscriptions.length) {
       this.subscriptions.forEach((subscription) => {
         subscription.unsubscribe()
       })
-    }
-  },
-  computed: {
-    user() {
-      return this.$store.getters["auth/user"]
     }
   },
   methods: {

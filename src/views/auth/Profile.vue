@@ -27,10 +27,11 @@ export default {
   mounted() {
     this.getProfile()
 
-    const onUpdateProfileSub = API.graphql({ query: onUpdateProfile }).subscribe({
-      next: () => this.getProfile()
-    })
-    this.subscriptions.push(onUpdateProfileSub)
+    // this.subscriptions.push(
+    //   API.graphql({query: onUpdateProfile, authMode: 'AMAZON_COGNITO_USER_POOLS'}).subscribe({
+    //     next: () => this.getProfile()
+    //   })
+    // )
   },
   unmounted() {
     if(this.subscriptions.length) {
@@ -42,7 +43,7 @@ export default {
   methods: {
     async getProfile() {
       try {
-        const profile = await API.graphql({ query: getProfileByOwner, variables: {
+        const profile = await API.graphql({query: getProfileByOwner, variables: {
           owner: this.$route.params.username
         }})
 

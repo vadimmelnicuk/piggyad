@@ -1,6 +1,6 @@
-import { Auth, API } from 'aws-amplify'
-import { v4 as uuidv4 } from 'uuid'
-import { createStream, updateProfile } from '@/graphql/mutations'
+import {Auth, API} from 'aws-amplify'
+import {v4 as uuidv4} from 'uuid'
+import {createStream, updateProfile} from '@/graphql/mutations'
 
 export const stream = {
   namespaced: true,
@@ -13,7 +13,7 @@ export const stream = {
   actions: {
     async createStream(_, stream) {
       try {
-        const response = await API.graphql({ query: createStream, variables: { input: {
+        const response = await API.graphql({query: createStream, variables: { input: {
           username: stream.username,
           platform: stream.platform,
           verified: false,
@@ -24,7 +24,7 @@ export const stream = {
 
         const user = await Auth.currentUserInfo()
   
-        await API.graphql({ query: updateProfile, variables: { input: {
+        await API.graphql({query: updateProfile, variables: {input: {
           id: user.attributes.sub,
           profileStreamId: response.data.createStream.id
         }}})

@@ -1,7 +1,7 @@
 import { Auth } from 'aws-amplify'
 import { createRouter, createWebHistory } from 'vue-router'
-import MainLayout from '@/views/layouts/MainLayout.vue'
-import StreamLayout from '@/views/layouts/StreamLayout.vue'
+import MainLayout from '@/components/layouts/MainLayout.vue'
+import StreamLayout from '@/components/layouts/StreamLayout.vue'
 
 const routes = [
   {
@@ -29,7 +29,7 @@ const routes = [
     children: [{
       path: '',
       name: 'Profile',
-      component: () => import('@/views/Profile.vue')
+      component: () => import('@/views/auth/Profile.vue')
     }],
     meta: { requiresAuth: true }
   },
@@ -39,7 +39,7 @@ const routes = [
     children: [{
       path: '',
       name: 'Login',
-      component: () => import('@/views/Login.vue')
+      component: () => import('@/views/auth/Login.vue')
     }]
   },
   {
@@ -48,7 +48,7 @@ const routes = [
     children: [{
       path: '',
       name: 'Signup',
-      component: () => import('@/views/Signup.vue')
+      component: () => import('@/views/auth/Signup.vue')
     }]
   },
   {

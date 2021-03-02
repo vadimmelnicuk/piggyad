@@ -1,23 +1,23 @@
 <template>
-  <nav class="bg-gray-800 mb-4">
-    <div class="container mx-auto py-6 px-4 text-white flex justify-between items-center">
-      <div class="flex items-center">
-        <router-link to="/">
-          <img src="@/assets/img/adstr-logo.png" alt="Logo" class="mr-10 h-16">
-        </router-link>
-        <router-link v-if="user" to="/stream" class="menu-link">Stream</router-link>
-        <router-link v-if="user" to="/advertise" class="menu-link">Advertise</router-link>
-        <router-link to="/about" class="menu-link">About</router-link>
-        <router-link v-if="isAdmin" to="/admin-panel" class="menu-link">Admin</router-link>
-      </div>
-      <div v-if="!user" class="flex items-center">
-        <router-link to="/login" class="btn btn-login">Login</router-link>
-        <router-link to="/signup" class="btn btn-signup">Sign up</router-link>
-      </div>
-      <div v-else class="flex items-center">
-        <a v-on:click="$router.push('/profile/'+user.username)" class="menu-link">{{user.username}}</a>
-        <a v-on:click="logout" class="btn btn-login cursor-pointer">Logout</a>
-      </div>
+  <nav class="container">
+    <div class="menu-links">
+      <router-link to="/" class="mr-1">
+        <img src="@/assets/images/logo.png" alt="logo" class="logo">
+      </router-link>
+      <router-link to="/about" class="menu-link mr-1">About</router-link>
+      <router-link v-if="user" to="/stream" class="menu-link mr-1">Stream</router-link>
+      <router-link v-if="user" to="/advertise" class="menu-link mr-1">Advertise</router-link>
+      <router-link v-if="isAdmin" to="/admin-panel" class="menu-link">Admin</router-link>
+    </div>
+    <div v-if="!user" class="auth">
+      <router-link to="/login" class="button mr-1">Login</router-link>
+      <router-link to="/signup" class="button">Sign up</router-link>
+    </div>
+    <div v-else class="auth">
+      <a v-on:click="$router.push('/profile/'+user.username)" class="menu-link mr-1">{{user.username}}</a>
+      <a v-on:click="logout" class="button logout">
+        <span class="icon text-grey"><i class="fas fa-sign-out-alt"></i></span>
+      </a>
     </div>
   </nav>
 </template>
@@ -54,5 +54,12 @@ export default {
 </script>
 
 <style scoped>
-.menu-link {@apply px-4 py-2 mr-4 text-indigo-100 rounded-md font-semibold hover:text-white hover:bg-gray-900 transition ease-in duration-100 cursor-pointer;}
+nav {height: 100px; display: flex; justify-content: space-between;}
+
+.menu-links {display: flex; align-items: center;}
+.logo {width: 9rem; margin-right: 2rem; cursor: pointer; opacity: 0.9;}
+.menu-link {display: inline-block; height: 2.25rem; font-weight: 600; cursor: pointer; color: #E5E7EB; padding: 0 1rem; padding-top: 0.35rem; border-radius: 0.5rem; background-color: none; transition: background-color 0.2s; transition: color 0.2s;}
+.menu-link:hover {color: #FFFFFF; text-decoration: none; background-color: #DBEAFE10;}
+.auth {display: flex; align-items: center;}
+.logout {padding-right: 0.8rem; padding-top: 0.45rem;}
 </style>

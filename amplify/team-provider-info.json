@@ -22,11 +22,15 @@
         },
         "streamFunctions": {
           "deploymentBucketName": "amplify-adstr-dev-232211-deployment",
-          "s3Key": "amplify-builds/streamFunctions-4a6d483241722b4f5446-build.zip"
+          "s3Key": "amplify-builds/streamFunctions-316335735a66786e554c-build.zip"
         },
         "streamStatus": {
           "deploymentBucketName": "amplify-adstr-dev-232211-deployment",
           "s3Key": "amplify-builds/streamStatus-67725851375251524455-build.zip"
+        },
+        "streamJobAllocation": {
+          "deploymentBucketName": "amplify-adstr-dev-232211-deployment",
+          "s3Key": "amplify-builds/streamJobAllocation-6d6432456b597a2b5772-build.zip"
         }
       }
     }
