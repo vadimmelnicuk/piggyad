@@ -4,7 +4,7 @@
       <div v-if="stream.verified">
         <div class="advert">Advert</div>
       </div>
-      <div v-else class="verify-banner" v-bind:class="{'active' : showBanner}">
+      <div v-else class="verify-banner">
         <img src="@/assets/images/logo.png" alt="Logo" class="logo">
         <div class="code">
           {{verificationToken[1]}}<br/>
@@ -22,7 +22,7 @@
 <script>
 import {API} from 'aws-amplify'
 import {getStreamByToken} from '@/graphql/queries'
-import {onUpdateStreamById} from '@/graphql/subscriptions'
+import {onStreamByIdResolver} from '@/graphql/subscriptions'
 
 export default {
   name: 'StreamLink',
@@ -46,7 +46,7 @@ export default {
     await this.getStream()
 
     this.subscriptions.push(
-      API.graphql({query: onUpdateStreamById, variables: {
+      API.graphql({query: onStreamByIdResolver, authMode: 'API_KEY', variables: {
         id: this.stream.id
       }}).subscribe({
         next: () => this.getStream()
@@ -63,7 +63,7 @@ export default {
   methods: {
     async getStream() {
       try {
-        const stream = await API.graphql({query: getStreamByToken, authMode: 'AWS_IAM', variables: {
+        const stream = await API.graphql({query: getStreamByToken, authMode: 'API_KEY', variables: {
           urlToken: this.$route.params.token
         }})
 

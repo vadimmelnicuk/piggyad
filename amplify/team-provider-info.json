@@ -22,7 +22,7 @@
         },
         "streamFunctions": {
           "deploymentBucketName": "amplify-adstr-dev-232211-deployment",
-          "s3Key": "amplify-builds/streamFunctions-316335735a66786e554c-build.zip"
+          "s3Key": "amplify-builds/streamFunctions-4e656d5257486b746369-build.zip"
         },
         "streamStatus": {
           "deploymentBucketName": "amplify-adstr-dev-232211-deployment",

@@ -92,13 +92,13 @@ export default {
     this.getAdverts()
     
     this.subscriptions.push(
-      API.graphql({query: onCreateAdvert, authMode: 'AWS_IAM'}).subscribe({
+      API.graphql({query: onCreateAdvert, authMode: 'API_KEY'}).subscribe({
         next: () => this.getAdverts()
       })
     )
 
     this.subscriptions.push(
-      API.graphql({query: onDeleteAdvert, authMode: 'AWS_IAM'}).subscribe({
+      API.graphql({query: onDeleteAdvert, authMode: 'API_KEY'}).subscribe({
         next: () => this.getAdverts()
       })
     )

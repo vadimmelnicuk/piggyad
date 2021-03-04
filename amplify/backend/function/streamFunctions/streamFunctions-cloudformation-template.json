@@ -27,6 +27,10 @@
     "apiadstrGraphQLAPIEndpointOutput": {
       "Type": "String",
       "Default": "apiadstrGraphQLAPIEndpointOutput"
+    },
+    "apiadstrGraphQLAPIKeyOutput": {
+      "Type": "String",
+      "Default": "apiadstrGraphQLAPIKeyOutput"
     }
   },
   "Conditions": {
@@ -139,6 +143,9 @@
             },
             "API_ADSTR_GRAPHQLAPIENDPOINTOUTPUT": {
               "Ref": "apiadstrGraphQLAPIEndpointOutput"
+            },
+            "API_ADSTR_GRAPHQLAPIKEYOUTPUT": {
+              "Ref": "apiadstrGraphQLAPIKeyOutput"
             }
           }
         },

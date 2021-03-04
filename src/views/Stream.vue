@@ -65,7 +65,7 @@
 import {API} from 'aws-amplify'
 import {getStreamByOwner} from '@/graphql/queries'
 import {deleteStream} from '@/graphql/mutations'
-import {onUpdateStreamById} from '@/graphql/subscriptions'
+import {onStreamByIdResolver} from '@/graphql/subscriptions'
 
 export default {
   name: 'Stream',
@@ -91,7 +91,7 @@ export default {
     await this.getStream()
 
     this.subscriptions.push(
-      API.graphql({query: onUpdateStreamById, variables: {
+      API.graphql({query: onStreamByIdResolver, authMode: 'API_KEY', variables: {
         id: this.stream.id
       }}).subscribe({
         next: () => this.getStream()
@@ -110,8 +110,6 @@ export default {
       const stream = await API.graphql({query: getStreamByOwner, variables: {
         owner: this.user.username
       }})
-
-      console.log('Get stream')
 
       if (stream.data.getStreamByOwner.items.length) {
         this.stream = stream.data.getStreamByOwner.items[0]

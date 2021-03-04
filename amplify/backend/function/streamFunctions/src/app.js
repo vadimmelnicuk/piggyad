@@ -10,6 +10,7 @@ See the License for the specific language governing permissions and limitations 
 /* Amplify Params - DO NOT EDIT
 	API_ADSTR_GRAPHQLAPIENDPOINTOUTPUT
 	API_ADSTR_GRAPHQLAPIIDOUTPUT
+	API_ADSTR_GRAPHQLAPIKEYOUTPUT
 	API_ADSTR_SECRETTABLE_ARN
 	API_ADSTR_SECRETTABLE_NAME
 	API_ADSTR_STREAMTABLE_ARN
@@ -27,17 +28,11 @@ const fsAsync = require('fs').promises
 const axios = require('axios')
 const aws4 = require('aws4')
 const urlParse = require('url').URL
-const https = require('https')
-const cognitoSP = new AWS.CognitoIdentityServiceProvider({region: process.env.REGION})
-const AWSAppSyncClient = require('aws-appsync').default
-const gql = require('graphql-tag')
 const express = require('express')
 const bodyParser = require('body-parser')
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
-const {getTwitchStreamerData} = require('twitch')
 
-require('es6-promise').polyfill()
-require('isomorphic-fetch')
+const {getTwitchStreamerData} = require('twitch')
 
 // ffmpeg setup
 ffmpeg.setFfmpegPath('/opt/bin/ffmpeg')
@@ -46,9 +41,6 @@ ffmpeg.setFfmpegPath('/opt/bin/ffmpeg')
 var app = express()
 var twitchAccessToken = null
 var twitchClientId = null
-var cognitoUserPoolClientId  = null
-var cognitoUserPoolId = null
-var cognitoAdmin = null
 
 app.use(bodyParser.json())
 app.use(awsServerlessExpressMiddleware.eventContext())
@@ -117,187 +109,18 @@ app.post('/stream/verify', async (req, res) => {
       if (verification1 && verification2 && verification3) {
         console.log("Changing stream verification status")
 
-        // TODO: refactor to use AppSync API
-        // Below is the DynamoDB implementation
+        await docClient.update({
+          TableName: process.env.API_ADSTR_STREAMTABLE_NAME,
+          Key: {'id': stream.Item.id},
+          UpdateExpression: 'set #verified=:verified',
+          ExpressionAttributeNames: {'#verified': 'verified'},
+          ExpressionAttributeValues: {':verified': true}
+        }).promise()
 
-        // ================================================= DynamoDB Method
-
-        // await docClient.update({
-        //   TableName: process.env.API_ADSTR_STREAMTABLE_NAME,
-        //   Key: { 'id': stream.Item.id },
-        //   UpdateExpression: 'set #verified=:verified',
-        //   ExpressionAttributeNames: { '#verified': 'verified' },
-        //   ExpressionAttributeValues: { ':verified': true }
-        // }).promise()
-
-        // ================================================= Cognito Method
-
-        // const authParams = {
-        //   AuthFlow: "ADMIN_NO_SRP_AUTH",
-        //   ClientId: cognitoUserPoolClientId.key,
-        //   UserPoolId: cognitoUserPoolId.key,
-        //   AuthParameters: {
-        //     USERNAME: 'admin',
-        //     PASSWORD: cognitoAdmin.key
-        //   }
-        // }
-        
-        // const credentials = await getCredentials(authParams)
-
-        // const client = new AWSAppSyncClient({
-        //   disableOffline: true,
-        //   url: process.env.API_ADSTR_GRAPHQLAPIENDPOINTOUTPUT,
-        //   region: process.env.REGION,
-        //   auth: {
-        //     type: "AMAZON_COGNITO_USER_POOLS",
-        //     jwtToken: credentials.AuthenticationResult.IdToken
-        //   }
-        // })
-        // await client.hydrated()
-
-        // const updateStream = gql(`
-        //   mutation updateStream($input: UpdateStreamInput!) {
-        //     updateStream(input: $input) {
-        //       id
-        //       verified
-        //     }
-        //   }
-        // `)
-
-        // const response = await client.mutate({
-        //   mutation: updateStream,
-        //   variables: {
-        //     input: {
-        //       id: stream.Item.id,
-        //       verified: true
-        //     }
-        //   },
-        //   fetchPolicy: 'no-cache'
-        // })
-
-        // ================================================= aws4 Method
-
-        // const updateStream = `
-        // mutation updateStream($input: UpdateStreamInput!) {
-        //   updateStream(input: $input) {
-        //     id
-        //     verified
-        //   }
-        // }`
-
-        // const body = {
-        //   query: updateStream,
-        //   operationName: 'updateStream',
-        //   variables: {
-        //     input: {
-        //       id: stream.Item.id,
-        //       verified: true
-        //     }
-        //   }
-        // }
-
-        const updateNote = `
-        mutation updateNote($input: UpdateNoteInput!) {
-          updateNote(input: $input) {
-            id
-            body
-          }
-        }`
-        const body = {
-          query: updateNote,
-          operationName: 'updateNote',
-          variables: {
-            input: {
-              id: '9434df1e-fe39-45a5-8052-cff71c22173f',
-              body: 'lambda-mutation'
-            }
-          }
-        }
-        const signOptions = {
-          method: 'POST',
-          url: process.env.API_ADSTR_GRAPHQLAPIENDPOINTOUTPUT,
-          host: new urlParse(process.env.API_ADSTR_GRAPHQLAPIENDPOINTOUTPUT).hostname.toString(),
-          path: '/graphql',
-          region: process.env.REGION,
-          service: 'appsync',
-          headers: {
-            'content-type': 'application/json'
-          },
-          body: JSON.stringify(body),
-          data: body
-        }
-        const credentials = {
-          secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-          accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-          sessionToken: process.env.AWS_SESSION_TOKEN
-        }
-        const signed = aws4.sign(signOptions, credentials)
-        delete signed.headers.Host
-        delete signed.headers['Content-Length']
-
-        const response = await axios(signed)
-
-        // ================================================= Official Method
-
-        // const updateStream = `
-        // mutation updateStream($input: UpdateStreamInput!) {
-        //   updateStream(input: $input) {
-        //     id
-        //     verified
-        //   }
-        // }`
-
-        // const updateNote = `
-        // mutation updateNote($input: UpdateNoteInput!) {
-        //   updateNote(input: $input) {
-        //     id
-        //     body
-        //   }
-        // }`
-
-        // let req = new AWS.HttpRequest(process.env.API_ADSTR_GRAPHQLAPIENDPOINTOUTPUT, process.env.REGION)
-        // req.method = 'POST'
-        // req.path = '/graphql'
-        // req.headers.host = new urlParse(process.env.API_ADSTR_GRAPHQLAPIENDPOINTOUTPUT).hostname.toString()
-        // req.headers['Content-Type'] = 'application/json'
-        // req.body = JSON.stringify({
-        //   query: updateNote,
-        //   operationName: 'updateNote',
-        //   variables: {
-        //     input: {
-        //       id: '9434df1e-fe39-45a5-8052-cff71c22173f',
-        //       body: 'test mutation'
-        //     }
-        //   }
-        // })
-
-        // let signer = new AWS.Signers.V4(req, 'appsync', true);
-        // signer.addAuthorization(AWS.config.credentials, AWS.util.date.getDate())
-
-        // const data = await new Promise((resolve, reject) => {
-        //   let httpRequest = https.request({...req, host: req.headers.host}, (result) => {
-        //     result.on('data', (data) => {
-        //       resolve(JSON.parse(data.toString()));
-        //     })
-        //   })
-        //   httpRequest.write(req.body)
-        //   httpRequest.end()
-        // })
-
-        // axios method
-
-        // const response = await axios({
-        //   method: 'post',
-        //   url: process.env.API_ADSTR_GRAPHQLAPIENDPOINTOUTPUT,
-        //   data: req.body,
-        //   headers: req.headers
-        // })
-
-        console.log(response)
-
-        if (response.status === 200) {
-          console.log(response.data)
-        }
+        await postQuery({
+          query: `mutation ($id: ID!) {streamResolver(id: $id) {id}}`,
+          variables: {id: stream.Item.id}
+        })
         
         res.json({success: 'Stream successfully verified'})
       } else {
@@ -320,9 +143,6 @@ async function getSecrets() {
     if (data.Items.length) {
       twitchAccessToken = data.Items.find(secret => {return secret.name === 'twitchAccessToken'})
       twitchClientId = data.Items.find(secret => {return secret.name === 'twitchClientId'})
-      cognitoUserPoolClientId = data.Items.find(secret => {return secret.name === 'cognitoUserPoolClientId' })
-      cognitoUserPoolId = data.Items.find(secret => {return secret.name === 'cognitoUserPoolId'})
-      cognitoAdmin = data.Items.find(secret => {return secret.name === 'cognitoAdmin'})
     }
 
     return data
@@ -380,32 +200,42 @@ async function getStreamScreenshot(username) {
   })
 }
 
-async function getImageBuffer(url) {
+async function postQuery(query) {
+  console.log('Posting query')
+  console.log(query)
+
   try {
-    const response = await axios.get(url, {responseType: 'arraybuffer'})
-    const buffer = Buffer.from(response.data, 'binary')
-    return buffer
+    // IAM Method
+    // const signOptions = {
+    //   method: 'POST',
+    //   url: process.env.API_ADSTR_GRAPHQLAPIENDPOINTOUTPUT,
+    //   host: new urlParse(process.env.API_ADSTR_GRAPHQLAPIENDPOINTOUTPUT).hostname.toString(),
+    //   path: '/graphql',
+    //   region: process.env.REGION,
+    //   service: 'appsync',
+    //   headers: {'content-type': 'application/json'},
+    //   body: JSON.stringify(query),
+    //   data: query
+    // }
+    // const signed = aws4.sign(signOptions, {
+    //   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    //   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    //   sessionToken: process.env.AWS_SESSION_TOKEN
+    // })
+    // const data = await axios(signed)
+
+    // API KEY Method
+    const data = await axios({
+      method: 'POST',
+      url: process.env.API_ADSTR_GRAPHQLAPIENDPOINTOUTPUT,
+      headers: {'x-api-key': process.env.API_ADSTR_GRAPHQLAPIKEYOUTPUT},
+      data: query
+    })
+
+    console.log(data)
   } catch (error) {
     console.log(error)
   }
-}
-
-async function getCredentials(authParams) {
-  console.log('Getting Cognito Credentials')
-
-  return new Promise((resolve, reject) => {
-    cognitoSP.adminInitiateAuth(authParams, (authErr, authData) => {
-      if (authErr) {
-        console.log(authErr)
-        reject(authErr)
-      } else if (authData === null) {
-        reject("Auth data is null")
-      } else {
-        console.log("Auth Successful")
-        resolve(authData)
-      }
-    })
-  })
 }
 
 module.exports = app

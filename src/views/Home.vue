@@ -19,10 +19,10 @@
 </template>
 
 <script>
-import { API } from 'aws-amplify'
-import { listNotes } from '@/graphql/queries'
-import { createNote, deleteNote } from '@/graphql/mutations'
-import { onCreateNote, onDeleteNote } from '@/graphql/subscriptions'
+import {API} from 'aws-amplify'
+import {listNotes} from '@/graphql/queries'
+import {createNote, deleteNote} from '@/graphql/mutations'
+import {onCreateNote, onDeleteNote, onChangeNoteById} from '@/graphql/subscriptions'
 
 export default {
   name: 'Home',
@@ -45,13 +45,13 @@ export default {
   },
   created() {
     this.subscriptions.push(
-      API.graphql({query: onCreateNote, authMode: 'AWS_IAM'}).subscribe({
+      API.graphql({query: onCreateNote, authMode: 'API_KEY'}).subscribe({
         next: () => this.getNotes()
       })
     )
 
     this.subscriptions.push(
-      API.graphql({query: onDeleteNote, authMode: 'AWS_IAM'}).subscribe({
+      API.graphql({query: onDeleteNote, authMode: 'API_KEY'}).subscribe({
         next: () => this.getNotes()
       })
     )
@@ -65,14 +65,14 @@ export default {
   },
   methods: {
     async getNotes() {
-      const notes = await API.graphql({ query: listNotes, authMode: 'AWS_IAM' })
+      const notes = await API.graphql({query: listNotes, authMode: 'API_KEY'})
       this.notes = notes.data.listNotes.items
     },
     async createNote() {
-      await API.graphql({ query: createNote, variables: {input: this.note}})
+      await API.graphql({query: createNote, variables: {input: this.note}})
     },
     async deleteNote(id) {
-      await API.graphql({ query: deleteNote, variables: { input: { id: id }}})
+      await API.graphql({query: deleteNote, variables: {input: { id: id }}})
     }
   }
 }

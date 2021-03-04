@@ -2,7 +2,6 @@
   <div class="title">Profile</div>
   <div class="mb-8">
     <b>Profile:</b> {{profile}}<br/>
-    <b>Current user:</b> {{user}}<br/>
   </div>
 </template>
 

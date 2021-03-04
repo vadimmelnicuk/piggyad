@@ -1,9 +1,9 @@
 /* eslint-disable */
 // this is an auto generated file. This will be overwritten
 
-export const onUpdateStreamById = /* GraphQL */ `
-  subscription OnUpdateStreamById($id: ID!) {
-    onUpdateStreamById(id: $id) {
+export const onStreamByIdResolver = /* GraphQL */ `
+  subscription OnStreamByIdResolver($id: ID!) {
+    onStreamByIdResolver(id: $id) {
       id
       owner
       username
@@ -12,6 +12,36 @@ export const onUpdateStreamById = /* GraphQL */ `
       online
       urlToken
       verificationToken
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateAdvertByOwner = /* GraphQL */ `
+  subscription OnUpdateAdvertByOwner($owner: String!) {
+    onUpdateAdvertByOwner(owner: $owner) {
+      id
+      owner
+      title
+      type
+      asset {
+        key
+        identity
+      }
+      status
+      impressions
+      lastImpression
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onChangeNoteById = /* GraphQL */ `
+  subscription OnChangeNoteById {
+    onChangeNoteById {
+      id
+      owner
+      body
       createdAt
       updatedAt
     }
@@ -83,54 +113,6 @@ export const onDeleteProfile = /* GraphQL */ `
     }
   }
 `;
-export const onCreateStream = /* GraphQL */ `
-  subscription OnCreateStream {
-    onCreateStream {
-      id
-      owner
-      username
-      platform
-      verified
-      online
-      urlToken
-      verificationToken
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onUpdateStream = /* GraphQL */ `
-  subscription OnUpdateStream {
-    onUpdateStream {
-      id
-      owner
-      username
-      platform
-      verified
-      online
-      urlToken
-      verificationToken
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const onDeleteStream = /* GraphQL */ `
-  subscription OnDeleteStream {
-    onDeleteStream {
-      id
-      owner
-      username
-      platform
-      verified
-      online
-      urlToken
-      verificationToken
-      createdAt
-      updatedAt
-    }
-  }
-`;
 export const onCreateSecret = /* GraphQL */ `
   subscription OnCreateSecret {
     onCreateSecret {
@@ -192,6 +174,54 @@ export const onDeleteNote = /* GraphQL */ `
       id
       owner
       body
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onCreateStream = /* GraphQL */ `
+  subscription OnCreateStream {
+    onCreateStream {
+      id
+      owner
+      username
+      platform
+      verified
+      online
+      urlToken
+      verificationToken
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onUpdateStream = /* GraphQL */ `
+  subscription OnUpdateStream {
+    onUpdateStream {
+      id
+      owner
+      username
+      platform
+      verified
+      online
+      urlToken
+      verificationToken
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const onDeleteStream = /* GraphQL */ `
+  subscription OnDeleteStream {
+    onDeleteStream {
+      id
+      owner
+      username
+      platform
+      verified
+      online
+      urlToken
+      verificationToken
       createdAt
       updatedAt
     }
