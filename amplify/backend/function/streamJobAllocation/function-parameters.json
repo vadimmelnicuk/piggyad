@@ -1,11 +1,17 @@
 {
   "permissions": {
+    "api": {
+      "adstr": [
+        "read"
+      ]
+    },
     "storage": {
       "Stream:@model(appsync)": [
         "read"
       ],
       "Advert:@model(appsync)": [
-        "read"
+        "read",
+        "update"
       ],
       "AdvertJob:@model(appsync)": [
         "create",

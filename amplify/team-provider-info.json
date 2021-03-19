@@ -18,19 +18,19 @@
       "function": {
         "createProfile": {
           "deploymentBucketName": "amplify-adstr-dev-232211-deployment",
-          "s3Key": "amplify-builds/createProfile-56355a4176374f344c2b-build.zip"
+          "s3Key": "amplify-builds/createProfile-7955434b7156596c4f52-build.zip"
         },
         "streamFunctions": {
           "deploymentBucketName": "amplify-adstr-dev-232211-deployment",
-          "s3Key": "amplify-builds/streamFunctions-4e656d5257486b746369-build.zip"
+          "s3Key": "amplify-builds/streamFunctions-43576a366e525a316e61-build.zip"
         },
         "streamStatus": {
           "deploymentBucketName": "amplify-adstr-dev-232211-deployment",
-          "s3Key": "amplify-builds/streamStatus-67725851375251524455-build.zip"
+          "s3Key": "amplify-builds/streamStatus-6c7a66307871656a6f6f-build.zip"
         },
         "streamJobAllocation": {
           "deploymentBucketName": "amplify-adstr-dev-232211-deployment",
-          "s3Key": "amplify-builds/streamJobAllocation-6d6432456b597a2b5772-build.zip"
+          "s3Key": "amplify-builds/streamJobAllocation-58743459695550597041-build.zip"
         }
       }
     }

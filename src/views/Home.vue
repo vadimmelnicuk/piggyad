@@ -1,79 +1,116 @@
 <template>
-  <div v-if="user">
-    <div class="title">
-      Add new note
+  <div class="landing-banner">
+    <div class="line-1 mb-1">Earn cash while streaming on <i class="fab fa-twitch"></i> Twitch or <i class="fab fa-youtube"></i> Youtube</div>
+    <div class="line-2">You can earn up to <u>${{streamerPayout}}</u> per month by hosting ads</div>
+    <div class="line-2">with an average audience of <input type="number" v-model="streamerAudience"> and <input type="number" v-model="streamerTime"> hours of streaming time per week.</div>
+  </div>
+  <div class="landing-streamer-details flex">
+    <ul class="flex1 font-15 mr-2">
+      <li>
+        <span class="text-grey inline w-2-5"><i class="fas fa-gamepad"></i></span>
+        We support streamers of any size
+      </li>
+      <li>
+        <span class="text-grey inline w-2-5"><i class="fas fa-fingerprint"></i></span> All ad content is carefully moderated
+      </li>
+      <li>
+        <span class="text-grey inline w-2-5"><i class="fas fa-cash-register"></i></span>
+        Transparent payouts
+      </li>
+      <li>
+        <span class="text-grey inline w-2-5"><i class="fas fa-coins"></i></span>
+        No limits on withdrawals
+      </li>
+      <li>
+        <span class="text-grey inline w-2-5"><i class="fas fa-fighter-jet"></i></span>
+        One-off setup
+      </li>
+    </ul>
+    <div class="sign-up flex1 font-15">
+      <input type="email" placeholder="Your email" v-model="emailStreamer">
+      <button class="button large purple w-100p mt-1">Sign up</button>
     </div>
-    <form v-on:submit.prevent="createNote" class="w-full flex">
-      <input type="text" placeholder="Body" v-model="note.body">
-      <input type="submit" value="Create" class="ml-2 w-32">
-    </form>
   </div>
-  <div class="title">
-    Notes
+  <div class="landing-advertisers box">
+    <div class="title mb-2">Advertise on streaming platforms at very competitive rate</div>
+    <div class="landing-advertisers-details flex">
+      <ul class="flex1 font-15 mr-2">
+        <li>
+          <span class="text-grey inline w-2-5"><i class="fas fa-hand-holding-usd"></i></span>
+          CPM is only <u>$0.35</u>
+        </li>
+        <li>
+          <span class="text-grey inline w-2-5"><i class="fas fa-chart-pie"></i></span>
+          We work with business of any size and budget
+        </li>
+        <li>
+          <span class="text-grey inline w-2-5"><i class="fas fa-unlock-alt"></i></span>
+          AdBlocking technologies are ineffective<br/> against our approach
+        </li>
+      </ul>
+      <div class="contact flex1">
+        <!-- <div class="font-15">Contact us at</div>
+        <a href="mailto:sales@piggyad.com">sales@piggyad.com</a> -->
+        <input type="email" placeholder="Your email" v-model="emailAdvertiser">
+        <button class="button large w-100p mt-1">Get started</button>
+      </div>
+    </div>
+    
+    
   </div>
-  <div v-for="note in notes" v-bind:key="note.id">
-    {{note.body}} - 
-    <a v-on:click="$router.push('/profile/'+note.owner)" class="cursor-pointer">{{note.owner}}</a>
-    <a v-on:click="deleteNote(note.id)" class="ml-2 px-2 bg-gray-100 border cursor-pointer">x</a>
+  <div>
+
   </div>
 </template>
 
 <script>
-import {API} from 'aws-amplify'
-import {listNotes} from '@/graphql/queries'
-import {createNote, deleteNote} from '@/graphql/mutations'
-import {onCreateNote, onDeleteNote, onChangeNoteById} from '@/graphql/subscriptions'
-
 export default {
   name: 'Home',
   data() {
     return {
-      subscriptions: [],
-      notes: [],
-      note: {
-        body: ""
-      }
+      streamerAudience: 500,
+      streamerTime: 25,
+      emailStreamer: '',
+      emailAdvertiser: ''
     }
   },
   computed: {
     user() {
       return this.$store.getters['auth/user']
-    }
-  },
-  mounted() { 
-    this.getNotes()
-  },
-  created() {
-    this.subscriptions.push(
-      API.graphql({query: onCreateNote, authMode: 'API_KEY'}).subscribe({
-        next: () => this.getNotes()
-      })
-    )
-
-    this.subscriptions.push(
-      API.graphql({query: onDeleteNote, authMode: 'API_KEY'}).subscribe({
-        next: () => this.getNotes()
-      })
-    )
-  },
-  unmounted() {
-    if(this.subscriptions.length) {
-      this.subscriptions.forEach((subscription) => {
-        subscription.unsubscribe()
-      })
+    },
+    payout() {
+      return this.$store.getters['stream/payout']
+    },
+    streamerPayout() {
+      return this.payout * this.streamerAudience / 10 * this.streamerTime * 4
     }
   },
   methods: {
-    async getNotes() {
-      const notes = await API.graphql({query: listNotes, authMode: 'API_KEY'})
-      this.notes = notes.data.listNotes.items
-    },
-    async createNote() {
-      await API.graphql({query: createNote, variables: {input: this.note}})
-    },
-    async deleteNote(id) {
-      await API.graphql({query: deleteNote, variables: {input: { id: id }}})
-    }
+    
   }
 }
 </script>
+
+<style scoped>
+.landing-banner {border-radius: 0.5rem; padding: 2rem; padding-bottom: 2.5rem; background: linear-gradient(#2563EB, #3F19AC);}
+.landing-banner .line-1 {font-size: 2.8rem;}
+.landing-banner .line-2 {font-size: 1.8rem;}
+
+.landing-streamer-details {padding: 2rem;}
+.landing-streamer-details .sign-up {text-align: center;}
+.landing-streamer-details ul {list-style-type: none;}
+
+.landing-advertisers {padding: 2rem; margin-top: 3rem; font-size: 1.8rem;}
+.landing-advertisers .title {font-size: 2.8rem; font-weight: 400;}
+
+.landing-advertisers-details ul {list-style-type: none;}
+.landing-advertisers-details .get-started {text-align: center;}
+.landing-advertisers-details input[type="email"] {background-color: #0E1114;}
+
+input[type="number"] {width: 5rem; padding: 0.25rem; background: #FFFFFF10; border-radius: 0.5rem; font-size: 1.8rem; color: #E5E7EB; text-align: center; -moz-appearance: textfield;}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {-webkit-appearance: none;margin: 0;}
+
+input[type="email"] {display: inline-block; width: 100%; height: 3rem; padding: 0 1rem; font-size: 1.5rem; color: #E5E7EB; text-align: center; border: 1px solid #E5E7EB20; border-radius: 0.5rem; background-color: #0b0d0f;}
+input[type="email"]::placeholder {color: #6B7280;}
+</style>

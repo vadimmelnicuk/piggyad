@@ -3,6 +3,7 @@
     <header>
       <Header/>
     </header>
+    <toast/>
     <div class="container mt-2">
       <router-view/>
     </div>
@@ -13,12 +14,13 @@
 </template>
 
 <script>
-import Header from "@/components/Header.vue"
-import Footer from "@/components/Footer.vue"
+import Header from '@/components/Header.vue'
+import Footer from '@/components/Footer.vue'
+import Toast from '@/components/Toast.vue'
 
 export default {
   name: "App",
-  components: {Header, Footer},
+  components: {Header, Footer, Toast},
   beforeCreate() {
     document.body.style.backgroundColor = '#0E1114'
   }

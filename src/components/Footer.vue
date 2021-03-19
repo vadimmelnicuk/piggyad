@@ -1,7 +1,7 @@
 <template>
   <div class="container footer">
     <div class="border">
-      © {{year}} Piggyad Limited
+      © {{year}} Piggyad
     </div>
   </div>
 </template>

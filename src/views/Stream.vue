@@ -5,8 +5,10 @@
         <span v-if="stream.platform === 'twitch'" class="mr-05"><i class="fab fa-twitch"></i></span>
         <a v-bind:href="'https://www.twitch.tv/' + stream.username" target="_blank" class="mr-05">{{stream.username}}</a>
 
-        <span v-if="stream.online" class="tag border-green text-green">online</span>
-        <span v-else class="tag border-red text-red">offline</span>
+        <span v-if="stream.status === 'ONLINE' || stream.status === 'OFFLINE'" class="tag border-green text-green mr-05">Verified</span>
+        <span v-else class="tag border-red text-red">Unverified</span>
+        <span v-if="stream.status === 'ONLINE'" class="tag border-green text-green">Online</span>
+        <span v-else-if="stream.status === 'OFFLINE'" class="tag border-red text-red">Offline</span>
 
         <a v-on:click="deleteStream(stream.id)" class="button round ml-1 float-right">
           <img src="@/assets/images/cross.png">
@@ -14,7 +16,7 @@
       </div>
       <div class="box-separator"></div>
       <div class="integration-link padding-1">
-        <div class="mb-05">
+        <div class="mb-1 text-grey font-15">
           Integration url (keep this private)
         </div>
         <div class="url-field text-white w-100p" v-on:click="copyIntegrationUrl">
@@ -38,11 +40,59 @@
           </span>
         </div>
       </div>
-      <div v-if="stream.verified" class="padding-1">
-        Stream verified
+      <div v-if="stream.status === 'ONLINE' || stream.status === 'OFFLINE'" class="padding-1 mb-1">
+        <div class="mb-1 text-grey font-15">
+          Streaming activity
+        </div>
+        <div class="pt-1">
+          <div class="graph inline mr-2">
+            <img v-if="stream.status === 'ONLINE'" src="@/assets/images/paid_hours_online.png">
+            <img v-else-if="stream.status === 'OFFLINE'" src="@/assets/images/paid_hours_offline.png">
+          </div>
+          <div v-if="stream.status === 'ONLINE'" class="va-top inline mt-1">
+            <div class="inline mr-2 pr-2 box-separator-right">
+              <div class="text-grey">Earnings (last 7 days)</div>
+              <div class="font-15">$122.80</div>
+            </div>
+            <div class="inline mr-2">
+              <div class="text-grey">Total balance</div>
+              <div class="font-15">$347.30</div>
+            </div>
+            <div class="withdraw va-top inline">
+              <button class="button">
+                <span class="text-grey"><i class="far fa-credit-card"></i></span>
+                Withdraw
+              </button>
+            </div>
+            <div>
+              <div class="text-grey mt-1">Average views (last 7 days)</div>
+              <div class="font-15">237</div>
+            </div>
+          </div>
+          <div v-else-if="stream.status === 'OFFLINE'" class="va-top inline mt-1">
+            <div class="inline mr-2 pr-2 box-separator-right">
+              <div class="text-grey">Earnings (last 7 days)</div>
+              <div class="font-15">$0.00</div>
+            </div>
+            <div class="inline mr-2">
+              <div class="text-grey">Total balance</div>
+              <div class="font-15">$0.00</div>
+            </div>
+            <div class="withdraw va-top inline">
+              <button class="button">
+                <span class="text-grey"><i class="far fa-credit-card"></i></span>
+                Withdraw
+              </button>
+            </div>
+            <div>
+              <div class="text-grey mt-1">Average views (last 7 days)</div>
+              <div class="font-15">0</div>
+            </div>
+          </div>
+        </div>
       </div>
       <div v-else class="verification-step padding-1">
-        <div class="mb-05">Please verify your streaming account</div>
+        <div class="mb-1 text-grey font-15">Please verify your streaming account</div>
         <button v-on:click="verifyStream" class="button w-100p">
           <span v-if="streamVerifying" class="mr-05 text-grey"><i class="fas fa-sync-alt fa-spin"></i></span>
           <span v-else class="mr-05 text-grey"><i class="fas fa-user-check"></i></span>
@@ -52,10 +102,17 @@
       </div>
     </div>
     <div v-else class="link-account-step padding-1">
-      <div class="mb-05">Link your Twitch account</div>
-      <form v-on:submit.prevent="createStream" class="create-stream-form flex">
+      <div class="mb-1 text-grey font-15">Link your streaming account</div>
+      <form v-on:submit.prevent="" class="create-stream-form flex">
+        <select v-model="createStreamData.platform" class="platform mr-1" required>
+          <option disabled value="">Choose platform</option>
+          <option v-for="(item, index) in platforms" v-bind:key="index">{{item}}</option>
+        </select>
         <input type="text" placeholder="Username" v-model="createStreamData.username" class="username mr-1">
-        <input type="submit" value="Link" class="button w-10">
+        <button class="button w-10" v-on:click="createStream">
+          <span class="text-grey"><i class="fas fa-link"></i></span>
+          Link
+        </button>
       </form>
     </div>
   </div> 
@@ -65,7 +122,7 @@
 import {API} from 'aws-amplify'
 import {getStreamByOwner} from '@/graphql/queries'
 import {deleteStream} from '@/graphql/mutations'
-import {onStreamByIdResolver} from '@/graphql/subscriptions'
+import {onStreamResolverByOwner, onStreamByOwner} from '@/graphql/subscriptions'
 
 export default {
   name: 'Stream',
@@ -76,7 +133,7 @@ export default {
       streamVerifying: false,
       createStreamData: {
         username: '',
-        platform: 'twitch'
+        platform: ''
       },
       domain: window.location.href,
       showIntegrationUrl: false
@@ -85,14 +142,25 @@ export default {
   computed: {
     user() {
       return this.$store.getters['auth/user']
+    },
+    platforms() {
+      return this.$store.getters['stream/platforms']
     }
   },
   async mounted() {
     await this.getStream()
 
     this.subscriptions.push(
-      API.graphql({query: onStreamByIdResolver, authMode: 'API_KEY', variables: {
-        id: this.stream.id
+      API.graphql({query: onStreamResolverByOwner, authMode: 'API_KEY', variables: {
+        owner: this.user.username
+      }}).subscribe({
+        next: () => this.getStream()
+      })
+    )
+
+    this.subscriptions.push(
+      API.graphql({query: onStreamByOwner, variables: {
+        owner: this.user.username
       }}).subscribe({
         next: () => this.getStream()
       })
@@ -113,25 +181,37 @@ export default {
 
       if (stream.data.getStreamByOwner.items.length) {
         this.stream = stream.data.getStreamByOwner.items[0]
+      } else {
+        this.stream = null
       }
     },
     async createStream() {
-      this.$store.dispatch('stream/createStream', this.createStreamData)
+      try {
+        this.$store.dispatch('stream/createStream', this.createStreamData)
+        this.$store.commit('toast/add', {text: 'Stream account linked', type: 'success'})
+      } catch (error) {
+        this.$store.commit('toast/add', {text: error})
+      }
     },
     async deleteStream(id) {
-      await API.graphql({query: deleteStream, variables: { input: { id: id }}})
+      try {
+        await API.graphql({query: deleteStream, variables: {input: {id: id}}})
+        this.$store.commit('toast/add', {text: 'Stream account removed'})
+      } catch (error) {
+        this.$store.commit('toast/add', {text: error})
+      }
     },
     async verifyStream() {
       this.streamVerifying = true
 
-      try {
-        const response = await API.post('streamApi', '/stream/verify', { body: {
-          id: this.stream.id
-        }})
-        this.streamVerifying = false
-        console.log(response)
-      } catch (error) {
-        console.log(error)
+      const response = await API.post('streamApi', '/stream/verify', { body: {
+        id: this.stream.id
+      }})
+      this.streamVerifying = false
+      if (response.error) {
+        this.$store.commit('toast/add', {text: response.error, type: 'error'})
+      } else {
+        this.$store.commit('toast/add', {text: 'Stream account successfully verified', type: 'success'})
       }
     },
     toggleShowIntegrationUrl() {
@@ -146,7 +226,7 @@ export default {
       document.execCommand('copy')
       textToCopy.setAttribute('type', 'hidden')
 
-      //TODO: display an acknowledgement of a copy action
+      this.$store.commit('toast/add', {text: 'Link copied to clipboard'})
     }
   }
 }
@@ -158,6 +238,8 @@ export default {
 .url-field {display: inline-block; height: 2.25rem; padding: 0 0.5rem; padding-top: 0.35rem; border: 1px solid #E5E7EB20; border-radius: 0.25rem; background-color: #0E1114; cursor: pointer;}
 .url-field:hover {text-decoration: none;}
 
-.create-stream-form {flex-direction: row;}
+.create-stream-form .platform {flex-grow: 1;}
 .create-stream-form .username {flex-grow: 1;}
+
+.withdraw {margin-top: 1.25rem;}
 </style>

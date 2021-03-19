@@ -67,12 +67,29 @@ exports.getTwitchStreamersData = async (twitchClientId, twitchAccessToken, strea
 exports.getTwitchStreamerData = async (twitchClientId, twitchAccessToken, stream) => {
   console.log("Getting Twitch streamer data")
 
-  let userLogin = 'user_login=' + stream.Item.username
+  try {
+    const response = await axios({
+      method: "GET",
+      url: "https://api.twitch.tv/helix/streams?user_login=" + stream.Item.username,
+      headers: {
+        "client-id": twitchClientId.key,
+        "Authorization": "Bearer " + twitchAccessToken.key
+      }
+    })
+
+    return response
+  } catch (error) {
+    return error
+  }
+}
+
+exports.getTwitchUserData = async (twitchClientId, twitchAccessToken, stream) => {
+  console.log("Getting Twitch user data")
 
   try {
     const response = await axios({
       method: "GET",
-      url: "https://api.twitch.tv/helix/streams?" + userLogin,
+      url: "https://api.twitch.tv/helix/users?login=" + stream.Item.username,
       headers: {
         "client-id": twitchClientId.key,
         "Authorization": "Bearer " + twitchAccessToken.key

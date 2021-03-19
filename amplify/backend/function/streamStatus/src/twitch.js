@@ -40,7 +40,7 @@ exports.getTwitchStreamersData = async (twitchClientId, twitchAccessToken, strea
 
   let userLogins = ''
 
-  for (const [index, stream] of streams.Items.entries()) {
+  for (const [index, stream] of streams.entries()) {
     if (index) {
       userLogins = userLogins + '&user_login=' + stream.username
     } else {

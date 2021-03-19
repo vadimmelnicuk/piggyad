@@ -12,11 +12,15 @@ var docClient = new AWS.DynamoDB.DocumentClient()
 exports.handler = async (event, context) => {
   if (event.request.userAttributes.sub) {
     try {
+      const date = new Date()
+      
       await docClient.put({
         TableName: process.env.API_ADSTR_PROFILETABLE_NAME,
         Item: {
           'id': event.request.userAttributes.sub,
-          'owner': event.userName
+          'owner': event.userName,
+          'createdAt': date.toISOString(),
+          'updatedAt': date.toISOString()
         }
       }).promise()
 

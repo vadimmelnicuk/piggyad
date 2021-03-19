@@ -18,10 +18,10 @@
 </template>
 
 <script>
-import { API } from 'aws-amplify'
-import { listSecrets, getSecretByName } from '@/graphql/queries'
-import { createSecret, deleteSecret } from '@/graphql/mutations'
-import { onCreateSecret, onDeleteSecret } from '@/graphql/subscriptions'
+import {API} from 'aws-amplify'
+import {listSecrets, getSecretByName} from '@/graphql/queries'
+import {createSecret, deleteSecret} from '@/graphql/mutations'
+import {onCreateSecret, onDeleteSecret} from '@/graphql/subscriptions'
 
 export default {
   name: "AdminPanel",
@@ -35,18 +35,20 @@ export default {
       }
     }
   },
-  mounted() {
-    this.getSecrets()
+  async mounted() {
+    await this.getSecrets()
 
-    const onCreateSecretSub = API.graphql({ query: onCreateSecret }).subscribe({
-      next: () => this.getSecrets()
-    })
-    this.subscriptions.push(onCreateSecretSub)
+    this.subscriptions.push(
+      API.graphql({query: onCreateSecret}).subscribe({
+        next: () => this.getSecrets()
+      })
+    )
 
-    const onDeleteSecretSub = API.graphql({ query: onDeleteSecret }).subscribe({
-      next: () => this.getSecrets()
-    })
-    this.subscriptions.push(onDeleteSecretSub)
+    this.subscriptions.push(
+      API.graphql({query: onDeleteSecret}).subscribe({
+        next: () => this.getSecrets()
+      })
+    )
   },
   unmounted() {
     if(this.subscriptions.length) {

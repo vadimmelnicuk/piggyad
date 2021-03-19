@@ -1,16 +1,3 @@
-type Note
-@model
-@auth (rules: [
-  {allow: owner, operations: [create, update, delete]},
-  {allow: private, operations: [read]},
-  {allow: public, operations: [read]}
-])
-{
-  id: ID!
-  owner: String
-  body: String!
-}
-
 type Profile
 @model
 @auth (rules: [
@@ -33,15 +20,23 @@ type Stream
 ])
 @key (name: "getStreamByOwner", fields: ["owner"], queryField: "getStreamByOwner")
 @key (name: "getStreamByToken", fields: ["urlToken"], queryField: "getStreamByToken")
+@key (name: "getStreamByStatus", fields: ["status"], queryField: "getStreamByStatus")
 {
   id: ID!
-  owner: String 
+  owner: String
   username: String
   platform: String
-  verified: Boolean
-  online: Boolean 
+  status: StreamStatus
   urlToken: String
   verificationToken: String
+  twitchStreamData: AWSJSON
+  twitchUserData: AWSJSON
+}
+
+enum StreamStatus {
+  UNVERIFIED
+  OFFLINE
+  ONLINE
 }
 
 type Advert
@@ -52,6 +47,7 @@ type Advert
   {allow: public, operations: [read]}
 ])
 @key (name: "getAdvertsByOwner", fields: ["owner"], queryField: "getAdvertsByOwner")
+@key (name: "getAdvertByStatus", fields: ["status", "lastImpression"], queryField: "getAdvertByStatus")
 {
   id: ID!
   owner: String
@@ -59,12 +55,17 @@ type Advert
   type: String
   asset: S3Object
   status: AdvertStatus
-  impressions: Int
+  impressionsPerDay: Int
+  impressions: [Impression] @connection(keyName: "getImpressionByAdvert", fields: ["id"])
   lastImpression: AWSDateTime
+  duration: Int
+  languages: AWSJSON
+  categories: AWSJSON
 }
 
 enum AdvertStatus {
-  INACTIVE
+  DRAFT
+  REVIEW
   ACTIVE
 }
 
@@ -74,12 +75,55 @@ type AdvertJob
   {allow: private, operations: [read]},
   {allow: public, operations: [read]}
 ])
+@key (name: "getAdvertJobByStreamer", fields: ["streamer", "createdAt"], queryField: "getAdvertJobByStreamer")
 {
   id: ID!
   streamer: String!
   stream: Stream! @connection
   advert: Advert! @connection
-  completed: Boolean!
+  createdAt: AWSDateTime!
+}
+
+type Impression
+@model
+@auth (rules: [
+  {allow: private, operations: [read]}
+])
+@key (name: "getImpressionByStreamer", fields: ["streamer", "createdAt"], queryField: "getImpressionByStreamer")
+@key(name: "getImpressionByAdvert", fields: ["advertId"], queryField: "getImpressionByAdvert")
+{
+  id: ID!
+  streamer: String!
+  streamId: ID!
+  advertId: ID!
+  impressions: Int!
+  createdAt: AWSDateTime!
+}
+
+type StreamSettings
+@model
+@auth (rules: [
+  {allow: groups, groups: ["Admin"]},
+  {allow: private, operations: [read]}
+])
+{
+  id: ID!
+  platforms: AWSJSON
+  twitchLanguages: AWSJSON
+  twitchTags: AWSJSON
+}
+
+type Inquiry
+@model
+@auth (rules: [
+  {allow: groups, groups: ["Admin"]},
+  {allow: private, operations: [create]},
+  {allow: public, operations: [create]}
+])
+{
+  id: ID!
+  email: String!
+  type: String!
 }
 
 type Secret
@@ -95,20 +139,26 @@ type Secret
 }
 
 type Mutation {
-  streamResolver(id: ID!): Stream
+  streamResolver(owner: String!): Stream
+  @aws_api_key @aws_cognito_user_pools
+
+  advertJobResolver(streamer: String!): AdvertJob
   @aws_api_key @aws_cognito_user_pools
 }
 
 type Subscription {
-  onStreamByIdResolver(id: ID!): Stream
+  onStreamResolverByOwner(owner: String!): Stream
   @aws_subscribe(mutations: ["streamResolver"])
   @aws_api_key @aws_cognito_user_pools
+
+  onStreamByOwner(owner: String!): Stream
+  @aws_subscribe(mutations: ["updateStream", "createStream", "deleteStream"])
 
   onUpdateAdvertByOwner(owner: String!): Advert
   @aws_subscribe(mutations: ["updateAdvert"])
 
-  onChangeNoteById: Note
-  @aws_subscribe(mutations: ["createNote"])
+  onAdvertJobResolverByStreamer(streamer: String!): AdvertJob
+  @aws_subscribe(mutations: ["advertJobResolver"])
   @aws_api_key @aws_cognito_user_pools
 }
 

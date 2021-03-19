@@ -2,16 +2,26 @@
   "permissions": {
     "api": {
       "adstr": [
-        "create",
-        "read",
-        "update",
-        "delete"
+        "read"
       ]
     },
     "storage": {
       "Stream:@model(appsync)": [
         "read",
         "update"
+      ],
+      "Advert:@model(appsync)": [
+        "read",
+        "update"
+      ],
+      "AdvertJob:@model(appsync)": [
+        "read",
+        "update",
+        "delete"
+      ],
+      "Impression:@model(appsync)": [
+        "create",
+        "read"
       ],
       "Secret:@model(appsync)": [
         "read",

@@ -5,10 +5,12 @@ import {v4 as uuidv4} from 'uuid'
 export const advert = {
   namespaced: true,
   state: {
-    cpm: 0.05, // £
-    impressionsMin: 5000,
-    impressionsMax: 100000,
-    assetMaxSize: 10 // Mb
+    cpm: 0.35, // $ per 1000 views
+    impressionsMin: 3000,
+    impressionsMax: 300000,
+    durationMin: 1,
+    durationMax: 30,
+    assetMaxSize: 12 // Mb
   },
   mutations: {
     
@@ -59,13 +61,19 @@ export const advert = {
             key: key,
             identity: rootState.auth.user.id
           },
-          status: 'INACTIVE',
-          impressions: 5000,
-          lastImpression: date.toISOString()
+          status: 'DRAFT',
+          impressionsPerDay: state.impressionsMin,
+          lastImpression: date.toISOString(),
+          duration: state.durationMin,
+          languages: JSON.stringify([]),
+          categories: JSON.stringify([])
         }}})
+
+        return true
       } catch (error) {
         console.log(error)
-        await Storage.remove(key, {level: 'protected' })
+        await Storage.remove(key, {level: 'protected'})
+        return false
       }
     },
     async deleteAdvert(_, id) {
@@ -84,17 +92,16 @@ export const advert = {
         console.log(error)
       }
     },
-    async updateAdvert(_, advert) {
-      console.log(advert)
-      
+    async updateAdvert(_, advert) {     
       try {
         const response = await API.graphql({query: updateAdvert, variables: { input: {
           id: advert.id,
           status: advert.status,
-          impressions: advert.impressions
+          impressionsPerDay: advert.impressionsPerDay,
+          duration: advert.duration,
+          languages: advert.languages,
+          categories: advert.categories
         }}})
-
-        console.log(response)
       } catch (error) {
         console.log(error)
       }
@@ -109,6 +116,12 @@ export const advert = {
     },
     impressionsMax(state) {
       return state.impressionsMax
+    },
+    durationMin(state) {
+      return state.durationMin
+    },
+    durationMax(state) {
+      return state.durationMax
     }
   }
 }

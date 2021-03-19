@@ -19,6 +19,14 @@
     "apiadstrGraphQLAPIIdOutput": {
       "Type": "String",
       "Default": "apiadstrGraphQLAPIIdOutput"
+    },
+    "apiadstrGraphQLAPIEndpointOutput": {
+      "Type": "String",
+      "Default": "apiadstrGraphQLAPIEndpointOutput"
+    },
+    "apiadstrGraphQLAPIKeyOutput": {
+      "Type": "String",
+      "Default": "apiadstrGraphQLAPIKeyOutput"
     }
   },
   "Conditions": {
@@ -154,6 +162,12 @@
                   }
                 ]
               ]
+            },
+            "API_ADSTR_GRAPHQLAPIENDPOINTOUTPUT": {
+              "Ref": "apiadstrGraphQLAPIEndpointOutput"
+            },
+            "API_ADSTR_GRAPHQLAPIKEYOUTPUT": {
+              "Ref": "apiadstrGraphQLAPIKeyOutput"
             }
           }
         },
@@ -268,6 +282,34 @@
             {
               "Effect": "Allow",
               "Action": [
+                "appsync:GraphQL"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:appsync:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":apis/",
+                      {
+                        "Ref": "apiadstrGraphQLAPIIdOutput"
+                      },
+                      "/types/read/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
                 "dynamodb:Get*",
                 "dynamodb:BatchGetItem",
                 "dynamodb:List*",
@@ -329,7 +371,9 @@
                 "dynamodb:List*",
                 "dynamodb:Describe*",
                 "dynamodb:Scan",
-                "dynamodb:Query"
+                "dynamodb:Query",
+                "dynamodb:Update*",
+                "dynamodb:RestoreTable*"
               ],
               "Resource": [
                 {

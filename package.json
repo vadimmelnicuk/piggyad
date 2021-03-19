@@ -1,5 +1,5 @@
 {
-  "name": "adstr",
+  "name": "piggyad",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -21,6 +21,7 @@
     "vuex": "^4.0.0-0"
   },
   "devDependencies": {
+    "@voerro/vue-tagsinput": "^2.4.3",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "^4.5.11",
     "@vue/cli-plugin-router": "~4.5.0",

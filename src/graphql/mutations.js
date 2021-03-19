@@ -2,60 +2,72 @@
 // this is an auto generated file. This will be overwritten
 
 export const streamResolver = /* GraphQL */ `
-  mutation StreamResolver($id: ID!) {
-    streamResolver(id: $id) {
+  mutation StreamResolver($owner: String!) {
+    streamResolver(owner: $owner) {
       id
       owner
       username
       platform
-      verified
-      online
+      status
       urlToken
       verificationToken
+      twitchStreamData
+      twitchUserData
       createdAt
       updatedAt
     }
   }
 `;
-export const createNote = /* GraphQL */ `
-  mutation CreateNote(
-    $input: CreateNoteInput!
-    $condition: ModelNoteConditionInput
-  ) {
-    createNote(input: $input, condition: $condition) {
+export const advertJobResolver = /* GraphQL */ `
+  mutation AdvertJobResolver($streamer: String!) {
+    advertJobResolver(streamer: $streamer) {
       id
-      owner
-      body
+      streamer
       createdAt
       updatedAt
-    }
-  }
-`;
-export const updateNote = /* GraphQL */ `
-  mutation UpdateNote(
-    $input: UpdateNoteInput!
-    $condition: ModelNoteConditionInput
-  ) {
-    updateNote(input: $input, condition: $condition) {
-      id
-      owner
-      body
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const deleteNote = /* GraphQL */ `
-  mutation DeleteNote(
-    $input: DeleteNoteInput!
-    $condition: ModelNoteConditionInput
-  ) {
-    deleteNote(input: $input, condition: $condition) {
-      id
-      owner
-      body
-      createdAt
-      updatedAt
+      stream {
+        id
+        owner
+        username
+        platform
+        status
+        urlToken
+        verificationToken
+        twitchStreamData
+        twitchUserData
+        createdAt
+        updatedAt
+      }
+      advert {
+        id
+        owner
+        title
+        type
+        asset {
+          key
+          identity
+        }
+        status
+        impressionsPerDay
+        impressions {
+          items {
+            id
+            streamer
+            streamId
+            advertId
+            impressions
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        lastImpression
+        duration
+        languages
+        categories
+        createdAt
+        updatedAt
+      }
     }
   }
 `;
@@ -74,10 +86,11 @@ export const createProfile = /* GraphQL */ `
         owner
         username
         platform
-        verified
-        online
+        status
         urlToken
         verificationToken
+        twitchStreamData
+        twitchUserData
         createdAt
         updatedAt
       }
@@ -99,10 +112,11 @@ export const updateProfile = /* GraphQL */ `
         owner
         username
         platform
-        verified
-        online
+        status
         urlToken
         verificationToken
+        twitchStreamData
+        twitchUserData
         createdAt
         updatedAt
       }
@@ -124,10 +138,11 @@ export const deleteProfile = /* GraphQL */ `
         owner
         username
         platform
-        verified
-        online
+        status
         urlToken
         verificationToken
+        twitchStreamData
+        twitchUserData
         createdAt
         updatedAt
       }
@@ -144,10 +159,11 @@ export const createStream = /* GraphQL */ `
       owner
       username
       platform
-      verified
-      online
+      status
       urlToken
       verificationToken
+      twitchStreamData
+      twitchUserData
       createdAt
       updatedAt
     }
@@ -163,10 +179,11 @@ export const updateStream = /* GraphQL */ `
       owner
       username
       platform
-      verified
-      online
+      status
       urlToken
       verificationToken
+      twitchStreamData
+      twitchUserData
       createdAt
       updatedAt
     }
@@ -182,10 +199,11 @@ export const deleteStream = /* GraphQL */ `
       owner
       username
       platform
-      verified
-      online
+      status
       urlToken
       verificationToken
+      twitchStreamData
+      twitchUserData
       createdAt
       updatedAt
     }
@@ -206,8 +224,23 @@ export const createAdvert = /* GraphQL */ `
         identity
       }
       status
-      impressions
+      impressionsPerDay
+      impressions {
+        items {
+          id
+          streamer
+          streamId
+          advertId
+          impressions
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       lastImpression
+      duration
+      languages
+      categories
       createdAt
       updatedAt
     }
@@ -228,8 +261,23 @@ export const updateAdvert = /* GraphQL */ `
         identity
       }
       status
-      impressions
+      impressionsPerDay
+      impressions {
+        items {
+          id
+          streamer
+          streamId
+          advertId
+          impressions
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       lastImpression
+      duration
+      languages
+      categories
       createdAt
       updatedAt
     }
@@ -250,8 +298,23 @@ export const deleteAdvert = /* GraphQL */ `
         identity
       }
       status
-      impressions
+      impressionsPerDay
+      impressions {
+        items {
+          id
+          streamer
+          streamId
+          advertId
+          impressions
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       lastImpression
+      duration
+      languages
+      categories
       createdAt
       updatedAt
     }
@@ -265,7 +328,6 @@ export const createAdvertJob = /* GraphQL */ `
     createAdvertJob(input: $input, condition: $condition) {
       id
       streamer
-      completed
       createdAt
       updatedAt
       stream {
@@ -273,10 +335,11 @@ export const createAdvertJob = /* GraphQL */ `
         owner
         username
         platform
-        verified
-        online
+        status
         urlToken
         verificationToken
+        twitchStreamData
+        twitchUserData
         createdAt
         updatedAt
       }
@@ -290,8 +353,23 @@ export const createAdvertJob = /* GraphQL */ `
           identity
         }
         status
-        impressions
+        impressionsPerDay
+        impressions {
+          items {
+            id
+            streamer
+            streamId
+            advertId
+            impressions
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
         lastImpression
+        duration
+        languages
+        categories
         createdAt
         updatedAt
       }
@@ -306,7 +384,6 @@ export const updateAdvertJob = /* GraphQL */ `
     updateAdvertJob(input: $input, condition: $condition) {
       id
       streamer
-      completed
       createdAt
       updatedAt
       stream {
@@ -314,10 +391,11 @@ export const updateAdvertJob = /* GraphQL */ `
         owner
         username
         platform
-        verified
-        online
+        status
         urlToken
         verificationToken
+        twitchStreamData
+        twitchUserData
         createdAt
         updatedAt
       }
@@ -331,8 +409,23 @@ export const updateAdvertJob = /* GraphQL */ `
           identity
         }
         status
-        impressions
+        impressionsPerDay
+        impressions {
+          items {
+            id
+            streamer
+            streamId
+            advertId
+            impressions
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
         lastImpression
+        duration
+        languages
+        categories
         createdAt
         updatedAt
       }
@@ -347,7 +440,6 @@ export const deleteAdvertJob = /* GraphQL */ `
     deleteAdvertJob(input: $input, condition: $condition) {
       id
       streamer
-      completed
       createdAt
       updatedAt
       stream {
@@ -355,10 +447,11 @@ export const deleteAdvertJob = /* GraphQL */ `
         owner
         username
         platform
-        verified
-        online
+        status
         urlToken
         verificationToken
+        twitchStreamData
+        twitchUserData
         createdAt
         updatedAt
       }
@@ -372,11 +465,147 @@ export const deleteAdvertJob = /* GraphQL */ `
           identity
         }
         status
-        impressions
+        impressionsPerDay
+        impressions {
+          items {
+            id
+            streamer
+            streamId
+            advertId
+            impressions
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
         lastImpression
+        duration
+        languages
+        categories
         createdAt
         updatedAt
       }
+    }
+  }
+`;
+export const createImpression = /* GraphQL */ `
+  mutation CreateImpression(
+    $input: CreateImpressionInput!
+    $condition: ModelImpressionConditionInput
+  ) {
+    createImpression(input: $input, condition: $condition) {
+      id
+      streamer
+      streamId
+      advertId
+      impressions
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateImpression = /* GraphQL */ `
+  mutation UpdateImpression(
+    $input: UpdateImpressionInput!
+    $condition: ModelImpressionConditionInput
+  ) {
+    updateImpression(input: $input, condition: $condition) {
+      id
+      streamer
+      streamId
+      advertId
+      impressions
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteImpression = /* GraphQL */ `
+  mutation DeleteImpression(
+    $input: DeleteImpressionInput!
+    $condition: ModelImpressionConditionInput
+  ) {
+    deleteImpression(input: $input, condition: $condition) {
+      id
+      streamer
+      streamId
+      advertId
+      impressions
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const createStreamSettings = /* GraphQL */ `
+  mutation CreateStreamSettings(
+    $input: CreateStreamSettingsInput!
+    $condition: ModelStreamSettingsConditionInput
+  ) {
+    createStreamSettings(input: $input, condition: $condition) {
+      id
+      platforms
+      twitchLanguages
+      twitchTags
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateStreamSettings = /* GraphQL */ `
+  mutation UpdateStreamSettings(
+    $input: UpdateStreamSettingsInput!
+    $condition: ModelStreamSettingsConditionInput
+  ) {
+    updateStreamSettings(input: $input, condition: $condition) {
+      id
+      platforms
+      twitchLanguages
+      twitchTags
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteStreamSettings = /* GraphQL */ `
+  mutation DeleteStreamSettings(
+    $input: DeleteStreamSettingsInput!
+    $condition: ModelStreamSettingsConditionInput
+  ) {
+    deleteStreamSettings(input: $input, condition: $condition) {
+      id
+      platforms
+      twitchLanguages
+      twitchTags
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const updateInquiry = /* GraphQL */ `
+  mutation UpdateInquiry(
+    $input: UpdateInquiryInput!
+    $condition: ModelInquiryConditionInput
+  ) {
+    updateInquiry(input: $input, condition: $condition) {
+      id
+      email
+      type
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const deleteInquiry = /* GraphQL */ `
+  mutation DeleteInquiry(
+    $input: DeleteInquiryInput!
+    $condition: ModelInquiryConditionInput
+  ) {
+    deleteInquiry(input: $input, condition: $condition) {
+      id
+      email
+      type
+      createdAt
+      updatedAt
     }
   }
 `;
@@ -417,6 +646,20 @@ export const deleteSecret = /* GraphQL */ `
       id
       name
       key
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const createInquiry = /* GraphQL */ `
+  mutation CreateInquiry(
+    $input: CreateInquiryInput!
+    $condition: ModelInquiryConditionInput
+  ) {
+    createInquiry(input: $input, condition: $condition) {
+      id
+      email
+      type
       createdAt
       updatedAt
     }

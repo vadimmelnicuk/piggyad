@@ -13,10 +13,11 @@ export const getProfile = /* GraphQL */ `
         owner
         username
         platform
-        verified
-        online
+        status
         urlToken
         verificationToken
+        twitchStreamData
+        twitchUserData
         createdAt
         updatedAt
       }
@@ -40,13 +41,107 @@ export const listProfiles = /* GraphQL */ `
           owner
           username
           platform
-          verified
-          online
+          status
           urlToken
           verificationToken
+          twitchStreamData
+          twitchUserData
           createdAt
           updatedAt
         }
+      }
+      nextToken
+    }
+  }
+`;
+export const getImpression = /* GraphQL */ `
+  query GetImpression($id: ID!) {
+    getImpression(id: $id) {
+      id
+      streamer
+      streamId
+      advertId
+      impressions
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listImpressions = /* GraphQL */ `
+  query ListImpressions(
+    $filter: ModelImpressionFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listImpressions(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        streamer
+        streamId
+        advertId
+        impressions
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getStreamSettings = /* GraphQL */ `
+  query GetStreamSettings($id: ID!) {
+    getStreamSettings(id: $id) {
+      id
+      platforms
+      twitchLanguages
+      twitchTags
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listStreamSettingss = /* GraphQL */ `
+  query ListStreamSettingss(
+    $filter: ModelStreamSettingsFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listStreamSettingss(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        platforms
+        twitchLanguages
+        twitchTags
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getInquiry = /* GraphQL */ `
+  query GetInquiry($id: ID!) {
+    getInquiry(id: $id) {
+      id
+      email
+      type
+      createdAt
+      updatedAt
+    }
+  }
+`;
+export const listInquirys = /* GraphQL */ `
+  query ListInquirys(
+    $filter: ModelInquiryFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listInquirys(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        email
+        type
+        createdAt
+        updatedAt
       }
       nextToken
     }
@@ -106,13 +201,72 @@ export const getProfileByOwner = /* GraphQL */ `
           owner
           username
           platform
-          verified
-          online
+          status
           urlToken
           verificationToken
+          twitchStreamData
+          twitchUserData
           createdAt
           updatedAt
         }
+      }
+      nextToken
+    }
+  }
+`;
+export const getImpressionByStreamer = /* GraphQL */ `
+  query GetImpressionByStreamer(
+    $streamer: String
+    $createdAt: ModelStringKeyConditionInput
+    $sortDirection: ModelSortDirection
+    $filter: ModelImpressionFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    getImpressionByStreamer(
+      streamer: $streamer
+      createdAt: $createdAt
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        streamer
+        streamId
+        advertId
+        impressions
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getImpressionByAdvert = /* GraphQL */ `
+  query GetImpressionByAdvert(
+    $advertId: ID
+    $sortDirection: ModelSortDirection
+    $filter: ModelImpressionFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    getImpressionByAdvert(
+      advertId: $advertId
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        streamer
+        streamId
+        advertId
+        impressions
+        createdAt
+        updatedAt
       }
       nextToken
     }
@@ -144,35 +298,6 @@ export const getSecretByName = /* GraphQL */ `
     }
   }
 `;
-export const getNote = /* GraphQL */ `
-  query GetNote($id: ID!) {
-    getNote(id: $id) {
-      id
-      owner
-      body
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const listNotes = /* GraphQL */ `
-  query ListNotes(
-    $filter: ModelNoteFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listNotes(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        owner
-        body
-        createdAt
-        updatedAt
-      }
-      nextToken
-    }
-  }
-`;
 export const listStreams = /* GraphQL */ `
   query ListStreams(
     $filter: ModelStreamFilterInput
@@ -185,10 +310,11 @@ export const listStreams = /* GraphQL */ `
         owner
         username
         platform
-        verified
-        online
+        status
         urlToken
         verificationToken
+        twitchStreamData
+        twitchUserData
         createdAt
         updatedAt
       }
@@ -203,10 +329,11 @@ export const getStream = /* GraphQL */ `
       owner
       username
       platform
-      verified
-      online
+      status
       urlToken
       verificationToken
+      twitchStreamData
+      twitchUserData
       createdAt
       updatedAt
     }
@@ -232,10 +359,11 @@ export const getStreamByOwner = /* GraphQL */ `
         owner
         username
         platform
-        verified
-        online
+        status
         urlToken
         verificationToken
+        twitchStreamData
+        twitchUserData
         createdAt
         updatedAt
       }
@@ -263,10 +391,43 @@ export const getStreamByToken = /* GraphQL */ `
         owner
         username
         platform
-        verified
-        online
+        status
         urlToken
         verificationToken
+        twitchStreamData
+        twitchUserData
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getStreamByStatus = /* GraphQL */ `
+  query GetStreamByStatus(
+    $status: StreamStatus
+    $sortDirection: ModelSortDirection
+    $filter: ModelStreamFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    getStreamByStatus(
+      status: $status
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        owner
+        username
+        platform
+        status
+        urlToken
+        verificationToken
+        twitchStreamData
+        twitchUserData
         createdAt
         updatedAt
       }
@@ -291,8 +452,23 @@ export const listAdverts = /* GraphQL */ `
           identity
         }
         status
-        impressions
+        impressionsPerDay
+        impressions {
+          items {
+            id
+            streamer
+            streamId
+            advertId
+            impressions
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
         lastImpression
+        duration
+        languages
+        categories
         createdAt
         updatedAt
       }
@@ -312,8 +488,23 @@ export const getAdvert = /* GraphQL */ `
         identity
       }
       status
-      impressions
+      impressionsPerDay
+      impressions {
+        items {
+          id
+          streamer
+          streamId
+          advertId
+          impressions
+          createdAt
+          updatedAt
+        }
+        nextToken
+      }
       lastImpression
+      duration
+      languages
+      categories
       createdAt
       updatedAt
     }
@@ -344,8 +535,74 @@ export const getAdvertsByOwner = /* GraphQL */ `
           identity
         }
         status
-        impressions
+        impressionsPerDay
+        impressions {
+          items {
+            id
+            streamer
+            streamId
+            advertId
+            impressions
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
         lastImpression
+        duration
+        languages
+        categories
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+export const getAdvertByStatus = /* GraphQL */ `
+  query GetAdvertByStatus(
+    $status: AdvertStatus
+    $lastImpression: ModelStringKeyConditionInput
+    $sortDirection: ModelSortDirection
+    $filter: ModelAdvertFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    getAdvertByStatus(
+      status: $status
+      lastImpression: $lastImpression
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        owner
+        title
+        type
+        asset {
+          key
+          identity
+        }
+        status
+        impressionsPerDay
+        impressions {
+          items {
+            id
+            streamer
+            streamId
+            advertId
+            impressions
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
+        lastImpression
+        duration
+        languages
+        categories
         createdAt
         updatedAt
       }
@@ -358,7 +615,6 @@ export const getAdvertJob = /* GraphQL */ `
     getAdvertJob(id: $id) {
       id
       streamer
-      completed
       createdAt
       updatedAt
       stream {
@@ -366,10 +622,11 @@ export const getAdvertJob = /* GraphQL */ `
         owner
         username
         platform
-        verified
-        online
+        status
         urlToken
         verificationToken
+        twitchStreamData
+        twitchUserData
         createdAt
         updatedAt
       }
@@ -383,8 +640,23 @@ export const getAdvertJob = /* GraphQL */ `
           identity
         }
         status
-        impressions
+        impressionsPerDay
+        impressions {
+          items {
+            id
+            streamer
+            streamId
+            advertId
+            impressions
+            createdAt
+            updatedAt
+          }
+          nextToken
+        }
         lastImpression
+        duration
+        languages
+        categories
         createdAt
         updatedAt
       }
@@ -401,7 +673,6 @@ export const listAdvertJobs = /* GraphQL */ `
       items {
         id
         streamer
-        completed
         createdAt
         updatedAt
         stream {
@@ -409,10 +680,11 @@ export const listAdvertJobs = /* GraphQL */ `
           owner
           username
           platform
-          verified
-          online
+          status
           urlToken
           verificationToken
+          twitchStreamData
+          twitchUserData
           createdAt
           updatedAt
         }
@@ -421,9 +693,80 @@ export const listAdvertJobs = /* GraphQL */ `
           owner
           title
           type
+          asset {
+            key
+            identity
+          }
           status
-          impressions
+          impressionsPerDay
+          impressions {
+            nextToken
+          }
           lastImpression
+          duration
+          languages
+          categories
+          createdAt
+          updatedAt
+        }
+      }
+      nextToken
+    }
+  }
+`;
+export const getAdvertJobByStreamer = /* GraphQL */ `
+  query GetAdvertJobByStreamer(
+    $streamer: String
+    $createdAt: ModelStringKeyConditionInput
+    $sortDirection: ModelSortDirection
+    $filter: ModelAdvertJobFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    getAdvertJobByStreamer(
+      streamer: $streamer
+      createdAt: $createdAt
+      sortDirection: $sortDirection
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+    ) {
+      items {
+        id
+        streamer
+        createdAt
+        updatedAt
+        stream {
+          id
+          owner
+          username
+          platform
+          status
+          urlToken
+          verificationToken
+          twitchStreamData
+          twitchUserData
+          createdAt
+          updatedAt
+        }
+        advert {
+          id
+          owner
+          title
+          type
+          asset {
+            key
+            identity
+          }
+          status
+          impressionsPerDay
+          impressions {
+            nextToken
+          }
+          lastImpression
+          duration
+          languages
+          categories
           createdAt
           updatedAt
         }

@@ -9,7 +9,16 @@
                     "/POST",
                     "/GET"
                 ]
-            }
+            },
+            "policyResourceName": "/stream"
+        },
+        {
+            "name": "/advert-job/fulfill",
+            "lambdaFunction": "streamFunctions",
+            "privacy": {
+                "open": true
+            },
+            "policyResourceName": "/advert-job/fulfill"
         }
     ],
     "resourceName": "streamApi",
@@ -35,5 +44,5 @@
             ]
         }
     ],
-    "uuid": "ec8c9277"
+    "uuid": "c1590a64"
 }

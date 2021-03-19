@@ -86,7 +86,9 @@
           "category": "api",
           "resourceName": "adstr",
           "attributes": [
-            "GraphQLAPIIdOutput"
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput",
+            "GraphQLAPIKeyOutput"
           ]
         }
       ]
@@ -100,7 +102,9 @@
           "category": "api",
           "resourceName": "adstr",
           "attributes": [
-            "GraphQLAPIIdOutput"
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput",
+            "GraphQLAPIKeyOutput"
           ]
         }
       ]

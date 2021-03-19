@@ -8,9 +8,15 @@ See the License for the specific language governing permissions and limitations 
 
 
 /* Amplify Params - DO NOT EDIT
+	API_ADSTR_ADVERTJOBTABLE_ARN
+	API_ADSTR_ADVERTJOBTABLE_NAME
+	API_ADSTR_ADVERTTABLE_ARN
+	API_ADSTR_ADVERTTABLE_NAME
 	API_ADSTR_GRAPHQLAPIENDPOINTOUTPUT
 	API_ADSTR_GRAPHQLAPIIDOUTPUT
 	API_ADSTR_GRAPHQLAPIKEYOUTPUT
+	API_ADSTR_IMPRESSIONTABLE_ARN
+	API_ADSTR_IMPRESSIONTABLE_NAME
 	API_ADSTR_SECRETTABLE_ARN
 	API_ADSTR_SECRETTABLE_NAME
 	API_ADSTR_STREAMTABLE_ARN
@@ -26,13 +32,12 @@ const twitchm3u8 = require("twitch-m3u8")
 const ffmpeg = require('fluent-ffmpeg')
 const fsAsync = require('fs').promises
 const axios = require('axios')
-const aws4 = require('aws4')
-const urlParse = require('url').URL
+const uuidv4 = require('uuid').v4
 const express = require('express')
 const bodyParser = require('body-parser')
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
 
-const {getTwitchStreamerData} = require('twitch')
+const {getTwitchStreamerData, getTwitchUserData} = require('twitch')
 
 // ffmpeg setup
 ffmpeg.setFfmpegPath('/opt/bin/ffmpeg')
@@ -65,6 +70,10 @@ app.post('/stream/verify', async (req, res) => {
 
   if (twitchStreamerDataResponse.status == 200 && twitchStreamerDataResponse.data.data.length) {
     // Stream is online
+    // Get stream user data
+    const twitchUserDataResponse = await getTwitchUserData(twitchClientId, twitchAccessToken, stream)
+
+    // Get stream link
     const streamLink = await getStreamLink(stream.Item.username)
     console.log(streamLink)
     
@@ -102,9 +111,9 @@ app.post('/stream/verify', async (req, res) => {
       console.log(recognition)
       
       const verificationToken = stream.Item.verificationToken.split('-')
-      const verification1 = recognition.Blocks.find(block => { return block.Text === verificationToken[1] })
-      const verification2 = recognition.Blocks.find(block => { return block.Text === verificationToken[2] })
-      const verification3 = recognition.Blocks.find(block => { return block.Text === verificationToken[3] })
+      const verification1 = recognition.Blocks.find(block => {return block.Text === verificationToken[1]})
+      const verification2 = recognition.Blocks.find(block => {return block.Text === verificationToken[2]})
+      const verification3 = recognition.Blocks.find(block => {return block.Text === verificationToken[3]})
       
       if (verification1 && verification2 && verification3) {
         console.log("Changing stream verification status")
@@ -112,14 +121,14 @@ app.post('/stream/verify', async (req, res) => {
         await docClient.update({
           TableName: process.env.API_ADSTR_STREAMTABLE_NAME,
           Key: {'id': stream.Item.id},
-          UpdateExpression: 'set #verified=:verified',
-          ExpressionAttributeNames: {'#verified': 'verified'},
-          ExpressionAttributeValues: {':verified': true}
+          UpdateExpression: 'set #status=:status, twitchUserData=:twitchUserData',
+          ExpressionAttributeNames: {'#status': 'status'},
+          ExpressionAttributeValues: {':status': 'OFFLINE', ':twitchUserData': twitchUserDataResponse.data.data[0]}
         }).promise()
 
         await postQuery({
-          query: `mutation ($id: ID!) {streamResolver(id: $id) {id}}`,
-          variables: {id: stream.Item.id}
+          query: `mutation ($owner: String!) {streamResolver(owner: $owner) {owner}}`,
+          variables: {owner: stream.Item.owner}
         })
         
         res.json({success: 'Stream successfully verified'})
@@ -132,6 +141,50 @@ app.post('/stream/verify', async (req, res) => {
   } else {
     res.json({error: 'Stream is offline'})
   }
+})
+
+app.post('/advert-job/fulfill', async (req, res) => {
+  const advertJob = await getAdvertJob(req.body.id)
+  const stream = await getStream(advertJob.Item.advertJobStreamId)
+
+  console.log(advertJob)
+
+  //Add impressions record
+  const date = new Date()
+  const impression = await docClient.put({
+    TableName: process.env.API_ADSTR_IMPRESSIONTABLE_NAME,
+    Item: {
+      'id': uuidv4(),
+      'streamer': advertJob.Item.streamer,
+      'streamId': advertJob.Item.advertJobStreamId,
+      'advertId': advertJob.Item.advertJobAdvertId,
+      // 'impressions': stream.Item.twitchStreamData['viewer_count'],
+      'impressions': 125, // Impressions placeholder
+      'createdAt': date.toISOString(),
+      'updatedAt': date.toISOString()
+    }
+  }).promise()
+
+  //Delete advert job
+  await docClient.delete({
+    TableName: process.env.API_ADSTR_ADVERTJOBTABLE_NAME,
+    Key: {'id': advertJob.Item.id}
+  }).promise()
+
+  await postQuery({
+    query: `mutation ($streamer: String!) {advertJobResolver(streamer: $streamer) {streamer}}`,
+    variables: {streamer: advertJob.Item.streamer}
+  })
+
+  //Update last impression date
+  await docClient.update({
+    TableName: process.env.API_ADSTR_ADVERTTABLE_NAME,
+    Key: {'id': advertJob.Item.advertJobAdvertId},
+    UpdateExpression: 'set lastImpression=:lastImpression',
+    ExpressionAttributeValues: {':lastImpression': date.toISOString()}
+  }).promise()
+
+  res.json({success: 'Advert job processed'})
 })
 
 async function getSecrets() {
@@ -157,9 +210,7 @@ async function getStream(id) {
   try {
     const data = await docClient.get({
       TableName: process.env.API_ADSTR_STREAMTABLE_NAME,
-      Key: {
-        'id': id
-      }
+      Key: {'id': id}
     }).promise()
 
     return data
@@ -200,39 +251,31 @@ async function getStreamScreenshot(username) {
   })
 }
 
+async function getAdvertJob(id) {
+  console.log('Getting advert job')
+  
+  try {
+    const data = await docClient.get({
+      TableName: process.env.API_ADSTR_ADVERTJOBTABLE_NAME,
+      Key: {'id': id}
+    }).promise()
+
+    return data
+  } catch (error) {
+    return error
+  }
+}
+
 async function postQuery(query) {
   console.log('Posting query')
-  console.log(query)
 
   try {
-    // IAM Method
-    // const signOptions = {
-    //   method: 'POST',
-    //   url: process.env.API_ADSTR_GRAPHQLAPIENDPOINTOUTPUT,
-    //   host: new urlParse(process.env.API_ADSTR_GRAPHQLAPIENDPOINTOUTPUT).hostname.toString(),
-    //   path: '/graphql',
-    //   region: process.env.REGION,
-    //   service: 'appsync',
-    //   headers: {'content-type': 'application/json'},
-    //   body: JSON.stringify(query),
-    //   data: query
-    // }
-    // const signed = aws4.sign(signOptions, {
-    //   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    //   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    //   sessionToken: process.env.AWS_SESSION_TOKEN
-    // })
-    // const data = await axios(signed)
-
-    // API KEY Method
-    const data = await axios({
+    await axios({
       method: 'POST',
       url: process.env.API_ADSTR_GRAPHQLAPIENDPOINTOUTPUT,
       headers: {'x-api-key': process.env.API_ADSTR_GRAPHQLAPIKEYOUTPUT},
       data: query
     })
-
-    console.log(data)
   } catch (error) {
     console.log(error)
   }
