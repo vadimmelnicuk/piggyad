@@ -1,4 +1,14 @@
 <template>
+  <transition name="slide-fade">
+    <div v-if="inquirySubmitted" class="confirm-inqury box mb-2 border-green text-green">
+      <div>
+        Thank you for registering your interest in Piggyad!
+      </div>
+      <div>
+        You will be the first one to hear about our launch.
+      </div>
+    </div>
+  </transition>
   <div class="landing-banner">
     <div class="line-1 mb-1">Earn cash while streaming on <i class="fab fa-twitch"></i> Twitch or <i class="fab fa-youtube"></i> Youtube</div>
     <div class="line-2">You can earn up to <u>${{streamerPayout}}</u> per month by hosting ads</div>
@@ -28,7 +38,7 @@
     </ul>
     <div class="sign-up flex1 font-15">
       <input type="email" placeholder="Your email" v-model="emailStreamer">
-      <button class="button large purple w-100p mt-1">Sign up</button>
+      <button class="button large purple w-100p mt-1" v-on:click="submitInquiry('streamer')">Sign up</button>
     </div>
   </div>
   <div class="landing-advertisers box">
@@ -45,14 +55,14 @@
         </li>
         <li>
           <span class="text-grey inline w-2-5"><i class="fas fa-unlock-alt"></i></span>
-          AdBlocking technologies are ineffective<br/> against our approach
+          AdBlocking technologies are ineffective against our approach
         </li>
       </ul>
       <div class="contact flex1">
         <!-- <div class="font-15">Contact us at</div>
         <a href="mailto:sales@piggyad.com">sales@piggyad.com</a> -->
         <input type="email" placeholder="Your email" v-model="emailAdvertiser">
-        <button class="button large w-100p mt-1">Get started</button>
+        <button class="button large w-100p mt-1" v-on:click="submitInquiry('advertiser')">Get started</button>
       </div>
     </div>
     
@@ -64,6 +74,9 @@
 </template>
 
 <script>
+import {API} from 'aws-amplify'
+import {createInquiry} from '@/graphql/mutations'
+
 export default {
   name: 'Home',
   data() {
@@ -71,7 +84,8 @@ export default {
       streamerAudience: 500,
       streamerTime: 25,
       emailStreamer: '',
-      emailAdvertiser: ''
+      emailAdvertiser: '',
+      inquirySubmitted: false
     }
   },
   computed: {
@@ -86,12 +100,47 @@ export default {
     }
   },
   methods: {
-    
+    async submitInquiry(type) {
+      const email = type === 'streamer' ? this.emailStreamer : this.emailAdvertiser
+
+      if (email === '') {
+        this.$store.commit('toast/add', {text: 'Please type in your email', type: 'error'})
+        return
+      }
+
+      const emailRule = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      const emailValid = emailRule.test(email)
+
+      if (emailValid) {
+        try {
+          const response = await API.graphql({query: createInquiry, authMode: 'API_KEY', variables: {input: {
+            type: type,
+            email: email
+          }}})
+          
+          this.emailStreamer = ''
+          this.emailAdvertiser = ''
+          this.inquirySubmitted = true
+
+          let self = this
+
+          setTimeout(function() {
+            self.inquirySubmitted = false
+          }, 10000)
+        } catch (error) {
+          console.log(error)
+        }
+      } else {
+        this.$store.commit('toast/add', {text: 'Please provide a valid email address', type: 'error'})
+      }
+    }
   }
 }
 </script>
 
 <style scoped>
+.confirm-inqury {padding: 2rem; font-size: 1.8rem; text-align: center;}
+
 .landing-banner {border-radius: 0.5rem; padding: 2rem; padding-bottom: 2.5rem; background: linear-gradient(#2563EB, #3F19AC);}
 .landing-banner .line-1 {font-size: 2.8rem;}
 .landing-banner .line-2 {font-size: 1.8rem;}
@@ -113,4 +162,27 @@ input[type="number"]::-webkit-inner-spin-button {-webkit-appearance: none;margin
 
 input[type="email"] {display: inline-block; width: 100%; height: 3rem; padding: 0 1rem; font-size: 1.5rem; color: #E5E7EB; text-align: center; border: 1px solid #E5E7EB20; border-radius: 0.5rem; background-color: #0b0d0f;}
 input[type="email"]::placeholder {color: #6B7280;}
+
+@media (max-width: 1024px) {
+  .landing-streamer-details {display: block; padding: 0; margin-top: 2rem;}
+  .landing-streamer-details .sign-up {margin-top: 2rem;}
+
+  .landing-advertisers-details {display: block;}
+  .landing-advertisers-details .contact {margin-top: 2rem;}
+}
+
+@media (max-width: 768px) {
+  .confirm-inqury {font-size: 1.6rem;}
+  
+  .landing-banner .line-1 {font-size: 1.6rem;}
+  .landing-banner .line-2 {font-size: 1.25rem;}
+
+  .landing-advertisers .title {font-size: 1.6rem;}
+  .landing-advertisers-details ul {font-size: 1rem;}
+
+  input[type="number"] {width: 3.5rem; font-size: 1.25rem;}
+  input[type="email"] {font-size: 1.25rem;}
+
+  .landing-streamer-details ul {font-size: 1rem;}
+}
 </style>

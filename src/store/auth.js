@@ -35,7 +35,7 @@ export const auth = {
           commit('setGroups', session.accessToken.payload['cognito:groups'])
         }
       } catch (error) {
-        console.log(error)
+        // console.log(error)
       }
     },
     async logout({commit}) {

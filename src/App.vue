@@ -31,6 +31,10 @@ body {font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 
   .container {max-width: 1280px}
 }
 
+@media (max-width: 414px) {
+  .container {width: 414px;}
+}
+
 .title {font-weight: 600; font-size: 1.4rem;}
 
 a {color: #60a5fa; text-decoration: none; cursor: pointer;}

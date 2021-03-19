@@ -114,10 +114,9 @@ type StreamSettings
 }
 
 type Inquiry
-@model
+@model(queries: null)
 @auth (rules: [
   {allow: groups, groups: ["Admin"]},
-  {allow: private, operations: [create]},
   {allow: public, operations: [create]}
 ])
 {

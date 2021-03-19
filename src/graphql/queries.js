@@ -118,35 +118,6 @@ export const listStreamSettingss = /* GraphQL */ `
     }
   }
 `;
-export const getInquiry = /* GraphQL */ `
-  query GetInquiry($id: ID!) {
-    getInquiry(id: $id) {
-      id
-      email
-      type
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const listInquirys = /* GraphQL */ `
-  query ListInquirys(
-    $filter: ModelInquiryFilterInput
-    $limit: Int
-    $nextToken: String
-  ) {
-    listInquirys(filter: $filter, limit: $limit, nextToken: $nextToken) {
-      items {
-        id
-        email
-        type
-        createdAt
-        updatedAt
-      }
-      nextToken
-    }
-  }
-`;
 export const getSecret = /* GraphQL */ `
   query GetSecret($id: ID!) {
     getSecret(id: $id) {

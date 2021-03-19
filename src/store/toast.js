@@ -1,7 +1,7 @@
 export const toast = {
   namespaced: true,
   state: {
-    duration: 3000,
+    duration: 5000,
     toasts: []
   },
   mutations: {
